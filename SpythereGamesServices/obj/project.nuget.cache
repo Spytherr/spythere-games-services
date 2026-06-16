@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "vF+6XtOpUXw=",
+  "dgSpecHash": "iGLzP7NxHkk=",
   "success": true,
-  "projectFilePath": "D:\\SpythereLBs.api\\SpythereGamesServices\\SpythereGamesServices.csproj",
+  "projectFilePath": "D:\\SpythereGamesServices\\SpythereGamesServices\\SpythereGamesServices.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Mateusz\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
     "C:\\Users\\Mateusz\\.nuget\\packages\\microsoft.aspnetcore.openapi\\10.0.8\\microsoft.aspnetcore.openapi.10.0.8.nupkg.sha512",
