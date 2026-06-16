@@ -1,9 +1,9 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 
-namespace SpythereLBs;
+namespace SpythereGamesServices;
 
-public class SpythereLBsContext(DbContextOptions<SpythereLBsContext> options) : DbContext(options)
+public class SpythereGamesServicesContext(DbContextOptions<SpythereGamesServicesContext> options) : DbContext(options)
 {
     public DbSet<Player> Players => Set<Player>();
     public DbSet<Game> Games => Set<Game>();

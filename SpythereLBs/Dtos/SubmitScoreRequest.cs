@@ -1,4 +1,4 @@
-namespace SpythereLBs;
+namespace SpythereGamesServices;
 
 public record SubmitScoreRequest(
     string ExternalId,

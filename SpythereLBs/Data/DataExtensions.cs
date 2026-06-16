@@ -2,19 +2,19 @@
 
 using Microsoft.EntityFrameworkCore;
 
-namespace SpythereLBs;
+namespace SpythereGamesServices;
 
 public static class DataExtensions
 {
     public static void MigrateDatabase(this WebApplication app)
     {
         using var scope = app.Services.CreateScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<SpythereLBsContext>();
+        var dbContext = scope.ServiceProvider.GetRequiredService<SpythereGamesServicesContext>();
         dbContext.Database.Migrate();
     }
-    public static void SpythereLBsDataExtensions(this WebApplicationBuilder builder, string? connectionString)
+    public static void SpythereGamesServicesDataExtensions(this WebApplicationBuilder builder, string? connectionString)
     {
-        builder.Services.AddDbContext<SpythereLBsContext>(options =>
+        builder.Services.AddDbContext<SpythereGamesServicesContext>(options =>
             options.UseNpgsql(connectionString));
     }
 

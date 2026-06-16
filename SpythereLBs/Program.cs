@@ -1,4 +1,4 @@
-using SpythereLBs;
+using SpythereGamesServices;
 
 
 
@@ -6,8 +6,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi();
 
-var connectionString = builder.Configuration.GetConnectionString("SpythereLBsDatabase");
-builder.SpythereLBsDataExtensions(connectionString);
+var connectionString = builder.Configuration.GetConnectionString("SpythereGamesServicesDatabase");
+builder.SpythereGamesServicesDataExtensions(connectionString);
 
 
 var app = builder.Build();

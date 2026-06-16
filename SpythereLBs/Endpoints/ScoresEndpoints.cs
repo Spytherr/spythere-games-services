@@ -1,6 +1,6 @@
 using System;
 
-namespace SpythereLBs;
+namespace SpythereGamesServices;
 
 public static class ScoresEndpoints
 {
