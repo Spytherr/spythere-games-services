@@ -19,8 +19,10 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.MapChvChEndpoints();
+app.MapScoresEndpoints();
 app.MapPlayersEndpoints();
+
+app.MigrateDatabase();
 
 
 app.Run();

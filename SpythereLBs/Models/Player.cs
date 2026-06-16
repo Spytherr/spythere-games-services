@@ -8,4 +8,5 @@ public class Player
     public string ExternalId { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
+    public List<Scores> Scores { get; set; }
 }

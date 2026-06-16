@@ -1,12 +1,8 @@
 namespace SpythereLBs;
 
 public record RegisterPlayerRequest(
+    string ExternalId,
     string DisplayName,
-    ScoresDto Scores,
-    string Platform,
-    string ExternalId
-);
-public record ScoresDto(
-    int ChvChScore
+    string Platform
 );
 

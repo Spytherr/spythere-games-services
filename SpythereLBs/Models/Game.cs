@@ -7,5 +7,5 @@ public class Game
     public string Name { get; set; }
     public string Description { get; set; }
     public string IconUrl { get; set; }
-    public DateTime CreatedAt { get; set; }
+    public List<Scores> Scores { get; set; }
 }

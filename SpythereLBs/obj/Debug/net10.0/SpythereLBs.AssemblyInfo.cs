@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SpythereLBs")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+24cfa43068d845c4df30bee05bfb8db25b63bf7f")]
 [assembly: System.Reflection.AssemblyProductAttribute("SpythereLBs")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SpythereLBs")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
