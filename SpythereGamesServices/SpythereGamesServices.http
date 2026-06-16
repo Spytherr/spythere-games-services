@@ -5,4 +5,4 @@ Accept: application/json
 
 ###
 
-GET {{SpythereGamesServices_HostAddress}}/chvchscores
+GET {{SpythereGamesServices_HostAddress}}/scores
