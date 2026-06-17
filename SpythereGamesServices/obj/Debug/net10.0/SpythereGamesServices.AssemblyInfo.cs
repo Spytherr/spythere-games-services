@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SpythereGamesServices")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+25ac672bb2689a7fb2f8f19c92964858c32c2c97")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+253acb46b040bcd0d15504961cae097289f08c14")]
 [assembly: System.Reflection.AssemblyProductAttribute("SpythereGamesServices")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SpythereGamesServices")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

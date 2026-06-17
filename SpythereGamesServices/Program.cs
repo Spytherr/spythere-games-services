@@ -9,6 +9,9 @@ builder.Services.AddOpenApi();
 var connectionString = builder.Configuration.GetConnectionString("SpythereGamesServicesDatabase");
 builder.SpythereGamesServicesDataExtensions(connectionString);
 
+builder.Services.AddScoped<IPlayerService, PlayerService>();
+builder.Services.AddScoped<ILeaderboardService, LeaderboardService>();
+
 
 var app = builder.Build();
 
