@@ -7,7 +7,7 @@ public class SpythereGamesServicesContext(DbContextOptions<SpythereGamesServices
 {
     public DbSet<Player> Players => Set<Player>();
     public DbSet<Game> Games => Set<Game>();
-    public DbSet<Scores> Scores => Set<Scores>();
+    public DbSet<Score> Scores => Set<Score>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

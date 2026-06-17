@@ -1,10 +1,10 @@
 namespace SpythereGamesServices;
 
-public class Scores
+public class Score
 {
     public int Id { get; set; }
     public int PlayerId { get; set; }
     public int GameId { get; set; }
-    public long Score { get; set; }
-    public DateTime CreatedAt { get; set; }    
+    public long Value { get; set; }
+    public DateTime SubmittedAt { get; set; }    
 }

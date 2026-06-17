@@ -21,6 +21,7 @@ app.UseHttpsRedirection();
 
 app.MapScoresEndpoints();
 app.MapPlayersEndpoints();
+app.MapHealthEndpoints();
 
 app.MigrateDatabase();
 
