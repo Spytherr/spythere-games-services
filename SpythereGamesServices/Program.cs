@@ -6,6 +6,22 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi();
 
+// CORS — wymagane dla React SPA (portfolio) na innej domenie
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins(
+            "http://localhost:3000",    // React dev (CRA)
+            "http://localhost:5173"     // React dev (Vite)
+            // Dodaj tu produkcyjny URL gdy zdeployujesz React, np.:
+            // "https://spyther.dev"
+        )
+        .AllowAnyHeader()
+        .AllowAnyMethod();
+    });
+});
+
 var connectionString = builder.Configuration.GetConnectionString("SpythereGamesServicesDatabase");
 builder.SpythereGamesServicesDataExtensions(connectionString);
 
@@ -21,6 +37,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseCors("AllowFrontend");
 
 app.MapScoresEndpoints();
 app.MapPlayersEndpoints();
@@ -30,3 +47,4 @@ app.MigrateDatabase();
 
 
 app.Run();
+

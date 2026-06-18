@@ -22,6 +22,16 @@ public class SpythereGamesServicesContext(DbContextOptions<SpythereGamesServices
             .HasMany(g => g.Scores)
             .WithOne()
             .HasForeignKey(s => s.GameId);
+
+        // Jeden wynik per gracz per gra (upsert w LeaderboardService)
+        modelBuilder.Entity<Score>()
+            .HasIndex(s => new { s.PlayerId, s.GameId })
+            .IsUnique();
+
+        // Szybkie wyszukiwanie gry po kluczu
+        modelBuilder.Entity<Game>()
+            .HasIndex(g => g.Key)
+            .IsUnique();
     }
 
 }
