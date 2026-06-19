@@ -1,8 +1,6 @@
 namespace SpythereGamesServices;
 
 public record SubmitScoreRequest(
-    string ExternalId,
-    string Platform,
+    string AuthCode,
     long ScoreValue
 );
-

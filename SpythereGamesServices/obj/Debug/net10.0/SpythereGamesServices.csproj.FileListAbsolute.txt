@@ -123,3 +123,8 @@ D:\SpythereGamesServices\SpythereGamesServices\obj\Debug\net10.0\SpythereGamesSe
 D:\SpythereGamesServices\SpythereGamesServices\obj\Debug\net10.0\SpythereGamesServices.genruntimeconfig.cache
 D:\SpythereGamesServices\SpythereGamesServices\obj\Debug\net10.0\ref\SpythereGamesServices.dll
 D:\SpythereGamesServices\SpythereGamesServices\obj\Debug\net10.0\SpythereGamesServices.sourcelink.json
+D:\SpythereGamesServices\SpythereGamesServices\bin\Debug\net10.0\Google.Apis.dll
+D:\SpythereGamesServices\SpythereGamesServices\bin\Debug\net10.0\Google.Apis.Auth.dll
+D:\SpythereGamesServices\SpythereGamesServices\bin\Debug\net10.0\Google.Apis.Core.dll
+D:\SpythereGamesServices\SpythereGamesServices\bin\Debug\net10.0\System.Management.dll
+D:\SpythereGamesServices\SpythereGamesServices\bin\Debug\net10.0\runtimes\win\lib\net7.0\System.Management.dll

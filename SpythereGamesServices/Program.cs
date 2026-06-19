@@ -1,10 +1,9 @@
 using SpythereGamesServices;
 
-
-
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi();
+builder.Services.AddHttpClient(); // Wymagane przez GoogleAuthService
 
 // CORS — wymagane dla React SPA (portfolio) na innej domenie
 builder.Services.AddCors(options =>
@@ -27,7 +26,7 @@ builder.SpythereGamesServicesDataExtensions(connectionString);
 
 builder.Services.AddScoped<IPlayerService, PlayerService>();
 builder.Services.AddScoped<ILeaderboardService, LeaderboardService>();
-
+builder.Services.AddScoped<IGoogleAuthService, GoogleAuthService>();
 
 var app = builder.Build();
 
@@ -38,13 +37,13 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseCors("AllowFrontend");
+app.UseMiddleware<ApiKeyMiddleware>();
 
 app.MapScoresEndpoints();
 app.MapPlayersEndpoints();
+app.MapGamesEndpoints();
 app.MapHealthEndpoints();
 
 app.MigrateDatabase();
 
-
 app.Run();
-

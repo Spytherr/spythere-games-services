@@ -16,7 +16,8 @@ public class SpythereGamesServicesContext(DbContextOptions<SpythereGamesServices
         modelBuilder.Entity<Player>()
             .HasMany(p => p.Scores)
             .WithOne()
-            .HasForeignKey(s => s.PlayerId);
+            .HasForeignKey(s => s.PlayerId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<Game>()
             .HasMany(g => g.Scores)
