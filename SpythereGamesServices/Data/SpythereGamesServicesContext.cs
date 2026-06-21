@@ -33,6 +33,19 @@ public class SpythereGamesServicesContext(DbContextOptions<SpythereGamesServices
         modelBuilder.Entity<Game>()
             .HasIndex(g => g.Key)
             .IsUnique();
+
+        // Seedowanie gier
+        modelBuilder.Entity<Game>().HasData(
+            new Game
+            {
+                Id = 1,
+                Key = "chess-vs-checkers",
+                Name = "Chess vs Checkers",
+                Description = "A unique blend of Chess and Checkers mechanics.",
+                IconUrl = "",
+                CreatedAt = new DateTime(2023, 1, 1, 0, 0, 0, DateTimeKind.Utc)
+            }
+        );
     }
 
 }
