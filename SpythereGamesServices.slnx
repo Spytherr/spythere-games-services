@@ -1,3 +1,4 @@
 <Solution>
+  <Project Path="SpythereGamesServices.Tests/SpythereGamesServices.Tests.csproj" />
   <Project Path="SpythereGamesServices/SpythereGamesServices.csproj" />
 </Solution>
