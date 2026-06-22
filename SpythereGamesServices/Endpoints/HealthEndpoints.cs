@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace SpythereGamesServices;
@@ -8,7 +6,7 @@ public static class HealthEndpoints
 {
     public static void MapHealthEndpoints(this WebApplication app)
     {
-        var handler = async (SpythereGamesServicesContext context) =>
+        var handler = async (SpythereGamesServicesContext context, ILogger<SpythereGamesServicesContext> logger) =>
         {
             try
             {
@@ -16,9 +14,10 @@ public static class HealthEndpoints
                 await context.Database.ExecuteSqlRawAsync("SELECT 1");
                 return Results.Ok(new { Status = "Healthy" });
             }
-            catch
+            catch (Exception ex)
             {
-                return Results.StatusCode(503);
+                logger.LogError(ex, "Health check failed — database is unreachable");
+                return Results.Json(new { Status = "Unhealthy", Message = "Database is unreachable" }, statusCode: 503);
             }
         };
 
