@@ -6,7 +6,6 @@ public class Game
     public required string Key { get; set; }
     public required string Name { get; set; }
     public required string Description { get; set; }
-    public required string IconUrl { get; set; }
     public DateTime CreatedAt { get; set; }
     public List<Score> Scores { get; set; } = new();
 }

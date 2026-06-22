@@ -23,7 +23,7 @@ public class GoogleAuthService(IConfiguration configuration, IHttpClientFactory 
             ["code"] = authCode,
             ["client_id"] = clientId,
             ["client_secret"] = clientSecret,
-            ["redirect_uri"] = "",
+            ["redirect_uri"] = "postmessage",
             ["grant_type"] = "authorization_code"
         });
 

@@ -18,6 +18,10 @@ public class SpythereGamesServicesContext(DbContextOptions<SpythereGamesServices
             .WithOne()
             .HasForeignKey(s => s.PlayerId)
             .OnDelete(DeleteBehavior.Cascade);
+        
+        modelBuilder.Entity<Player>()
+            .HasIndex(p => p.ExternalId)
+            .IsUnique();
 
         modelBuilder.Entity<Game>()
             .HasMany(g => g.Scores)
@@ -42,7 +46,6 @@ public class SpythereGamesServicesContext(DbContextOptions<SpythereGamesServices
                 Key = "chess-vs-checkers",
                 Name = "Chess vs Checkers",
                 Description = "A unique blend of Chess and Checkers mechanics.",
-                IconUrl = "",
                 CreatedAt = new DateTime(2023, 1, 1, 0, 0, 0, DateTimeKind.Utc)
             }
         );
