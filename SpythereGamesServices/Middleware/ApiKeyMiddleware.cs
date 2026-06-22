@@ -1,3 +1,6 @@
+using System.Security.Cryptography;
+using System.Text;
+
 namespace SpythereGamesServices;
 
 public class ApiKeyMiddleware(RequestDelegate next, IConfiguration configuration)
@@ -28,7 +31,7 @@ public class ApiKeyMiddleware(RequestDelegate next, IConfiguration configuration
         }
 
         var expectedKey = configuration["ApiSettings:ApiKey"];
-        if (string.IsNullOrEmpty(expectedKey) || !string.Equals(providedKey, expectedKey))
+        if (string.IsNullOrEmpty(expectedKey) || !FixedTimeEquals(providedKey!, expectedKey))
         {
             context.Response.StatusCode = 401;
             await context.Response.WriteAsJsonAsync(new { Message = "Invalid API Key" });
@@ -36,5 +39,12 @@ public class ApiKeyMiddleware(RequestDelegate next, IConfiguration configuration
         }
 
         await next(context);
+    }
+
+    private static bool FixedTimeEquals(string a, string b)
+    {
+        var bytesA = Encoding.UTF8.GetBytes(a);
+        var bytesB = Encoding.UTF8.GetBytes(b);
+        return CryptographicOperations.FixedTimeEquals(bytesA, bytesB);
     }
 }

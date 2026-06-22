@@ -9,6 +9,8 @@ public static class ScoresEndpoints
         // GET /api/games/{gameKey}/scores/top — publiczny (dla strony portfolio)
         app.MapGet("/api/games/{gameKey}/scores/top", async (string gameKey, ILeaderboardService leaderboardService, int count = 10) =>
         {
+            count = Math.Clamp(count, 1, 100);
+
             var topScores = await leaderboardService.GetTopScoresAsync(gameKey, count);
             if (topScores is null) return Results.NotFound(new { Message = "Game not found" });
 
