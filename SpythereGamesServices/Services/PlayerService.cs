@@ -31,16 +31,17 @@ public class PlayerService(SpythereGamesServicesContext context) : IPlayerServic
         return newPlayer;
     }
 
-    public async Task DeletePlayerAsync(int id)
+    public async Task<bool> DeletePlayerAsync(int id)
     {
         var player = await context.Players
             .Include(p => p.Scores)
             .FirstOrDefaultAsync(p => p.Id == id);
 
-        if (player is not null)
-        {
-            context.Players.Remove(player);
-            await context.SaveChangesAsync();
-        }
+        if (player is null)
+            return false;
+
+        context.Players.Remove(player);
+        await context.SaveChangesAsync();
+        return true;
     }
 }
