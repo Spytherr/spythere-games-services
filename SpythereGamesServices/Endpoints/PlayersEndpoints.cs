@@ -19,12 +19,10 @@ public static class PlayersEndpoints
         // POST /api/players — rejestracja (wymaga API Key + Google Auth)
         app.MapPost("/api/players", async (RegisterPlayerRequest request, IPlayerService playerService, IGoogleAuthService googleAuth) =>
         {
-            // Weryfikuj tożsamość przez Google
-            var playerInfo = await googleAuth.VerifyAuthCodeAsync(request.AuthCode);
-            if (playerInfo is null)
-                return Results.Unauthorized();
+            var (playerInfo, error) = await GoogleAuthHelper.VerifyOrUnauthorizedAsync(googleAuth, request.AuthCode);
+            if (error is not null) return error;
 
-            var existingPlayer = await playerService.GetPlayerByExternalIdAsync(playerInfo.ExternalId);
+            var existingPlayer = await playerService.GetPlayerByExternalIdAsync(playerInfo!.ExternalId);
 
             if (existingPlayer is not null)
             {
@@ -44,14 +42,12 @@ public static class PlayersEndpoints
         // DELETE /api/players/me — usunięcie danych gracza (RODO)
         app.MapDelete("/api/players/me", async ([FromBody] DeletePlayerRequest request, IPlayerService playerService, IGoogleAuthService googleAuth) =>
         {
-            // Weryfikuj tożsamość — tylko gracz może usunąć SWOJE dane
-            var playerInfo = await googleAuth.VerifyAuthCodeAsync(request.AuthCode);
-            if (playerInfo is null)
-                return Results.Unauthorized();
+            var (playerInfo, error) = await GoogleAuthHelper.VerifyOrUnauthorizedAsync(googleAuth, request.AuthCode);
+            if (error is not null) return error;
 
-            var player = await playerService.GetPlayerByExternalIdAsync(playerInfo.ExternalId);
+            var player = await playerService.GetPlayerByExternalIdAsync(playerInfo!.ExternalId);
             if (player is null)
-                return Results.NotFound(new { Message = "Player not found" });
+                return Results.NotFound(new MessageResponse("Player not found"));
 
             await playerService.DeletePlayerAsync(player.Id);
 

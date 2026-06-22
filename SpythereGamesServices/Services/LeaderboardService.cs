@@ -2,11 +2,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace SpythereGamesServices;
 
-public class LeaderboardService(SpythereGamesServicesContext context) : ILeaderboardService
+public class LeaderboardService(SpythereGamesServicesContext context, IPlayerService playerService) : ILeaderboardService
 {
     public async Task<List<LeaderboardEntryResponse>?> GetTopScoresAsync(string gameKey, int count = 10)
     {
-        var game = await context.Games.FirstOrDefaultAsync(g => g.Key == gameKey);
+        var game = await context.FindGameByKeyAsync(gameKey);
         if (game is null) return null;
 
         // Ponieważ każdy gracz ma max 1 wynik per gra (upsert w SubmitScore),
@@ -42,10 +42,10 @@ public class LeaderboardService(SpythereGamesServicesContext context) : ILeaderb
 
     public async Task<string?> SubmitScoreAsync(string gameKey, string externalId, long scoreValue)
     {
-        var game = await context.Games.FirstOrDefaultAsync(g => g.Key == gameKey);
+        var game = await context.FindGameByKeyAsync(gameKey);
         if (game is null) return "Game not found";
 
-        var player = await context.Players.FirstOrDefaultAsync(p => p.ExternalId == externalId);
+        var player = await playerService.GetPlayerByExternalIdAsync(externalId);
         if (player is null) return "Player not found. Register first.";
 
         // Sprawdź czy gracz ma już wynik w tej grze
@@ -82,10 +82,10 @@ public class LeaderboardService(SpythereGamesServicesContext context) : ILeaderb
 
     public async Task<LeaderboardEntryResponse?> GetPlayerBestScoreAsync(string gameKey, string externalId)
     {
-        var game = await context.Games.FirstOrDefaultAsync(g => g.Key == gameKey);
+        var game = await context.FindGameByKeyAsync(gameKey);
         if (game is null) return null;
 
-        var player = await context.Players.FirstOrDefaultAsync(p => p.ExternalId == externalId);
+        var player = await playerService.GetPlayerByExternalIdAsync(externalId);
         if (player is null) return null;
 
         var playerScore = await context.Scores

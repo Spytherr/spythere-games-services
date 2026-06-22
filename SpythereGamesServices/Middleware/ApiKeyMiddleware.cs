@@ -23,7 +23,7 @@ public class ApiKeyMiddleware(RequestDelegate next, IConfiguration configuration
         if (!context.Request.Headers.TryGetValue(API_KEY_HEADER, out var providedKey))
         {
             context.Response.StatusCode = 401;
-            await context.Response.WriteAsJsonAsync(new { Message = "API Key is required" });
+            await context.Response.WriteAsJsonAsync(new MessageResponse("API Key is required"));
             return;
         }
 
@@ -31,7 +31,7 @@ public class ApiKeyMiddleware(RequestDelegate next, IConfiguration configuration
         if (string.IsNullOrEmpty(expectedKey) || !string.Equals(providedKey, expectedKey))
         {
             context.Response.StatusCode = 401;
-            await context.Response.WriteAsJsonAsync(new { Message = "Invalid API Key" });
+            await context.Response.WriteAsJsonAsync(new MessageResponse("Invalid API Key"));
             return;
         }
 

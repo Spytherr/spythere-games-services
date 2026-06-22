@@ -20,8 +20,8 @@ public static class GamesEndpoints
         // GET /api/games/{gameKey} — szczegóły jednej gry (publiczny)
         app.MapGet("/api/games/{gameKey}", async (string gameKey, SpythereGamesServicesContext context) =>
         {
-            var game = await context.Games.FirstOrDefaultAsync(g => g.Key == gameKey);
-            if (game is null) return Results.NotFound(new { Message = "Game not found" });
+            var game = await context.FindGameByKeyAsync(gameKey);
+            if (game is null) return Results.NotFound(new MessageResponse("Game not found"));
 
             return Results.Ok(new GameResponse(game.Id, game.Name, game.Description, game.IconUrl));
         })
