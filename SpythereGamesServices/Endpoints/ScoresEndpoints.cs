@@ -41,6 +41,28 @@ public static class ScoresEndpoints
         })
         .WithName("SubmitScore");
 
+        // PUT /api/games/{gameKey}/scores — submit score by externalId (no auth code exchange needed)
+        // Used by registered players to submit scores without the overhead of Google token exchange.
+        // Protected by API Key middleware.
+        app.MapPut("/api/games/{gameKey}/scores", async (string gameKey, SubmitScoreByExternalIdRequest request, ILeaderboardService leaderboardService) =>
+        {
+            var errorMessage = await leaderboardService.SubmitScoreAsync(
+                gameKey,
+                request.ExternalId,
+                request.ScoreValue
+            );
+
+            if (errorMessage is null)
+            {
+                return Results.Ok(new { Message = "Score submitted successfully" });
+            }
+            else
+            {
+                return Results.NotFound(new { Message = errorMessage });
+            }
+        })
+        .WithName("SubmitScoreByExternalId");
+
         // GET /api/games/{gameKey}/scores/player/{externalId} — publiczny
         app.MapGet("/api/games/{gameKey}/scores/player/{externalId}", async (string gameKey, string externalId, ILeaderboardService leaderboardService) =>
         {
