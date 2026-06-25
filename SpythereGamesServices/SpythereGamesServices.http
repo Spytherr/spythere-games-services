@@ -6,3 +6,10 @@ Accept: application/json
 ###
 
 GET {{SpythereGamesServices_HostAddress}}/scores
+
+###
+GET {{SpythereGamesServices_HostAddress}}/api/health
+
+###
+
+GET {{SpythereGamesServices_HostAddress}}/api/games

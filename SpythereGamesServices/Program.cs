@@ -3,7 +3,14 @@ using SpythereGamesServices;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi();
-builder.Services.AddHttpClient(); // Wymagane przez GoogleAuthService
+builder.Services.AddHttpClient();
+
+// JSON: PascalCase — Unity's JsonUtility wymaga dokładnego dopasowania nazw pól.
+// Bez tego API zwraca camelCase (rank, displayName...) a Unity oczekuje PascalCase (Rank, DisplayName...).
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
+    options.SerializerOptions.PropertyNamingPolicy = null; // null = PascalCase (domyślny C#)
+});
 
 // CORS — wymagane dla React SPA (portfolio) na innej domenie
 builder.Services.AddCors(options =>
