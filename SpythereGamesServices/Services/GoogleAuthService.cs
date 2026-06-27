@@ -17,55 +17,75 @@ public class GoogleAuthService(IConfiguration configuration, IHttpClientFactory 
 
         var httpClient = httpClientFactory.CreateClient();
 
-        // Wymień auth code na tokeny przez Google OAuth2
         var tokenRequest = new FormUrlEncodedContent(new Dictionary<string, string>
         {
             ["code"] = authCode,
             ["client_id"] = clientId,
             ["client_secret"] = clientSecret,
-            ["redirect_uri"] = "postmessage",
+            ["redirect_uri"] = "",
             ["grant_type"] = "authorization_code"
         });
 
         var response = await httpClient.PostAsync("https://oauth2.googleapis.com/token", tokenRequest);
         if (!response.IsSuccessStatusCode)
         {
-            logger.LogWarning("Google token exchange failed with status {StatusCode}", response.StatusCode);
+            var errBody = await response.Content.ReadAsStringAsync();
+            logger.LogWarning("Google token exchange failed with status {StatusCode}. Body: {Body}", response.StatusCode, errBody);
             return null;
         }
 
         var json = await response.Content.ReadFromJsonAsync<JsonElement>();
 
-        if (!json.TryGetProperty("id_token", out var idTokenElement))
+        if (!json.TryGetProperty("access_token", out var accessTokenElement))
         {
-            logger.LogWarning("Google token response did not contain an id_token");
+            logger.LogWarning("Google token response did not contain an access_token");
             return null;
         }
 
-        var idToken = idTokenElement.GetString();
-        if (string.IsNullOrEmpty(idToken))
+        var accessToken = accessTokenElement.GetString();
+        if (string.IsNullOrEmpty(accessToken))
         {
-            logger.LogWarning("Google token response contained an empty id_token");
+            logger.LogWarning("Google token response contained an empty access_token");
             return null;
         }
 
         try
         {
-            // Zweryfikuj ID token kryptograficznie
-            var payload = await GoogleJsonWebSignature.ValidateAsync(idToken,
-                new GoogleJsonWebSignature.ValidationSettings
-                {
-                    Audience = new[] { clientId }
-                });
+            using var requestMessage = new HttpRequestMessage(HttpMethod.Get, "https://games.googleapis.com/games/v1/players/me");
+            requestMessage.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+
+            var playerResponse = await httpClient.SendAsync(requestMessage);
+            if (!playerResponse.IsSuccessStatusCode)
+            {
+                var errBody = await playerResponse.Content.ReadAsStringAsync();
+                logger.LogWarning("Failed to fetch player info from Play Games API. Status: {StatusCode}. Body: {Body}", playerResponse.StatusCode, errBody);
+                return null;
+            }
+
+            var playerJson = await playerResponse.Content.ReadFromJsonAsync<JsonElement>();
+            if (!playerJson.TryGetProperty("playerId", out var playerIdElement))
+            {
+                logger.LogWarning("Play Games API response missing playerId");
+                return null;
+            }
+
+            string playerId = playerIdElement.GetString() ?? "";
+            string displayName = "Player";
+            if (playerJson.TryGetProperty("displayName", out var nameElement))
+            {
+                displayName = nameElement.GetString() ?? "Player";
+            }
+
+            logger.LogInformation("Successfully verified player {PlayerId} via Play Games API", playerId);
 
             return new GooglePlayerInfo(
-                ExternalId: payload.Subject,
-                DisplayName: payload.Name ?? "Player"
+                ExternalId: playerId,
+                DisplayName: displayName
             );
         }
-        catch (InvalidJwtException ex)
+        catch (Exception ex)
         {
-            logger.LogWarning(ex, "Google ID token validation failed");
+            logger.LogWarning(ex, "Exception while verifying player via Play Games API");
             return null;
         }
     }
