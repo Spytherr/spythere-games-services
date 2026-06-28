@@ -10,7 +10,7 @@ public static class GamesEndpoints
         app.MapGet("/api/games", async (SpythereGamesServicesContext context) =>
         {
             var games = await context.Games
-                .Select(g => new GameResponse(g.Id, g.Name, g.Description))
+                .Select(g => new GameResponse(g.Id, g.Key, g.Name, g.Description))
                 .ToListAsync();
 
             return Results.Ok(games);
@@ -23,7 +23,7 @@ public static class GamesEndpoints
             var game = await context.Games.FirstOrDefaultAsync(g => g.Key == gameKey);
             if (game is null) return Results.NotFound(new { Message = "Game not found" });
 
-            return Results.Ok(new GameResponse(game.Id, game.Name, game.Description));
+            return Results.Ok(new GameResponse(game.Id, game.Key, game.Name, game.Description));
         })
         .WithName("GetGame");
     }
