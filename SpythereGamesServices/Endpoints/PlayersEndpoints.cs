@@ -28,7 +28,7 @@ public static class PlayersEndpoints
 
             if (existingPlayer is not null)
             {
-                return Results.Ok(new { Message = "Player already exists", PlayerId = existingPlayer.Id });
+                return Results.Ok(new { Message = "Player already exists", PlayerId = existingPlayer.Id, existingPlayer.ExternalId });
             }
 
             var newPlayer = await playerService.RegisterPlayerAsync(
@@ -37,7 +37,7 @@ public static class PlayersEndpoints
                 request.Platform
             );
 
-            return Results.Created($"/api/players/{newPlayer.Id}", new { Message = "Player registered successfully", PlayerId = newPlayer.Id });
+            return Results.Created($"/api/players/{newPlayer.Id}", new { Message = "Player registered successfully", PlayerId = newPlayer.Id, newPlayer.ExternalId });
         })
         .WithName("RegisterPlayer");
 
