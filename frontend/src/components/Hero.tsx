@@ -1,10 +1,35 @@
+import { useState, useEffect } from 'react'
+
 function Hero() {
+  const [visible, setVisible] = useState(false)
+
+  useEffect(() => {
+    const timer = setTimeout(() => setVisible(true), 100)
+    return () => clearTimeout(timer)
+  }, [])
+
   return (
     <section className="flex flex-col items-center justify-center min-h-screen px-4 ">
-      <img src="/logo.png" alt="Spythere Games" className="w-80 h-50 mb-1" />
+      <img
+        src="/logo.png"
+        alt="Spythere Games"
+        className={`w-80 h-50 mb-1 transition-all duration-700 ${
+          visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+        }`}
+      />
       {/* <h1 className="text-5xl font-bold mb-4">Spythere Games</h1> */}
-      <p className="text-5xl text-gray-300 mb-8 py-7">Independent game developer</p>
-      <div className="flex gap-4">
+      <p
+        className={`text-5xl text-gray-300 mb-8 py-7 transition-all duration-700 delay-200 ${
+          visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+        }`}
+      >
+        Independent game developer
+      </p>
+      <div
+        className={`flex gap-4 transition-all duration-700 delay-400 ${
+          visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+        }`}
+      >
         <a
           href="https://youtube.com/@yourchannel"
           target="_blank"

@@ -2,12 +2,14 @@ import { useState, useEffect } from 'react'
 import type { Game, LeaderboardEntry } from '../types'
 import { fetchGames, fetchTopScores } from '../api/client'
 import { getPlatformImage } from '../gameData'
+import { useInView } from '../hooks/useInView'
 
 function LeaderboardSection() {
   const [games, setGames] = useState<Game[]>([])
   const [selectedGame, setSelectedGame] = useState<string | null>(null)
   const [scores, setScores] = useState<LeaderboardEntry[]>([])
   const [loading, setLoading] = useState(false)
+  const { ref, inView } = useInView<HTMLElement>()
 
   // 1) Załaduj listę gier raz przy starcie
   useEffect(() => {
@@ -34,7 +36,9 @@ function LeaderboardSection() {
   }, [games])
 
   return (
-    <section className="py-16 px-4">
+    <section ref={ref} className={`py-16 px-4 transition-all duration-500 ${
+      inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+    }`}>
       <h2 className="text-3xl font-bold text-center mb-8">Leaderboards</h2>
 
       {/* Tabs do wyboru gry */}
