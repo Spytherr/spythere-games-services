@@ -27,19 +27,27 @@ function GamesSection() {
         {games.map((game) => (
           <div
             key={game.Id}
-            className="flex  gap-6 border border-gray-200 rounded-lg p-6 hover:shadow-lg transition"
+            className="flex  gap-6 border-4 border-gray-200 p-6 hover:shadow-lg transition"
           >
             <div className="flex-1 text-left">
               <div className="flex items-center gap-3 mb-2">
                 <span className="text-2xl">🎮</span>
                 <h3 className="text-xl font-semibold">{game.Name}</h3>
               </div>
-              <p className="text-gray-500 w-full">{game.Description}</p>
+              <p className="text-gray-500 w-full mb-4">{game.Description}</p>
+              <a
+                href="https://play.google.com/store"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block px-6 py-3 m-8 bg-green-500 text-white outline-3 hover:bg-green-600 transition"
+              >
+                Google Play Store
+              </a>
             </div>
             <img
               src={`/games/${game.Id}/logo.png`}
               alt={game.Name}
-              className="w-32 h-32 object-cover rounded-lg"
+              className="w-32 h-32 object-cover "
             />
           </div>
         ))}

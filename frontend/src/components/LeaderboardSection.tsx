@@ -42,7 +42,7 @@ function LeaderboardSection() {
           <button
             key={game.Id}
             onClick={() => setSelectedGame(game.Key)}
-            className={`px-4 py-2 rounded-lg transition ${
+            className={`px-4 py-2 outline-3 transition ${
               selectedGame === game.Key
                 ? 'bg-purple-600 text-white'
                 : 'bg-gray-200 hover:bg-gray-300'

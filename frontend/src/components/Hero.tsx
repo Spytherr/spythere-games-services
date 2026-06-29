@@ -8,14 +8,14 @@ function Hero() {
         <a
           href="https://youtube.com/@yourchannel"
           target="_blank"
-          className="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
+          className="px-6 py-3 bg-red-600 text-white outline-3 hover:bg-red-700 transition"
         >
           YouTube
         </a>
         <a
           href="https://github.com/yourusername"
           target="_blank"
-          className="px-6 py-3 bg-gray-800 text-white rounded-lg hover:bg-gray-900 transition"
+          className="px-6 py-3 bg-gray-800 text-white outline-3 hover:bg-gray-900 transition"
         >
           GitHub
         </a>
