@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import type { Game } from '../types'
 import { fetchGames } from '../api/client'
-import { getGameDescription } from '../Descriptions'
+import { getGameDescription } from '../gameData'
 
 function GamesSection() {
   // useState — jak pole w klasie C#, przechowuje stan komponentu
@@ -23,7 +23,7 @@ function GamesSection() {
 
   return (
     <section className="py-16 px-4">
-      <h2 className="text-3xl font-bold text-center mb-8">Games</h2>
+      <h2 className="text-6xl text-center mb-8">Games</h2>
       <div className="grid grid-cols-1 md:grid-cols-1 gap-6 max-w-5xl mx-auto">
         {games.map((game) => (
           <div
@@ -35,11 +35,11 @@ function GamesSection() {
                 <img
                   src={`/${game.Key}/icon.png`}
                   alt={game.Name}
-                  className="w-16 h-16 object-cover outline-4 outline-white"
+                  className="w-16 h-16 object-cover outline-3 outline-white"
                 />
-                <h3 className="text-xl font-semibold">{game.Name}</h3>
+                <h3 className="text-5xl ">{game.Name}</h3>
               </div>
-              <p className="text-gray-500 w-full mb-4">{getGameDescription(game.Key)}</p>
+              <p className="text-gray-300 w-full mb-4">{getGameDescription(game.Key)}</p>
               <a
                 href="https://play.google.com/store"
                 target="_blank"
@@ -52,7 +52,7 @@ function GamesSection() {
             <img
               src={`/${game.Key}/screenshot.png`}
               alt={game.Name}
-              className="w-32 h-80 object-cover outline-4 outline-white"
+              className="w-32 h-62 object-cover outline-3 outline-white"
             />
           </div>
         ))}

@@ -1,9 +1,9 @@
 function Hero() {
   return (
-    <section className="flex flex-col items-center justify-center min-h-[60vh] px-4 ">
-      <img src="/logo.png" alt="Spythere Games" className="w-80 h-50 mb-6" />
+    <section className="flex flex-col items-center justify-center min-h-screen px-4 ">
+      <img src="/logo.png" alt="Spythere Games" className="w-80 h-50 mb-1" />
       {/* <h1 className="text-5xl font-bold mb-4">Spythere Games</h1> */}
-      <p className="text-lg text-gray-500 mb-8 py-7">Independent game developer</p>
+      <p className="text-5xl text-gray-300 mb-8 py-7">Independent game developer</p>
       <div className="flex gap-4">
         <a
           href="https://youtube.com/@yourchannel"

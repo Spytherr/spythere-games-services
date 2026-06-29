@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import type { Game, LeaderboardEntry } from '../types'
 import { fetchGames, fetchTopScores } from '../api/client'
-import { getPlatformImage } from '../Descriptions'
+import { getPlatformImage } from '../gameData'
 
 function LeaderboardSection() {
   const [games, setGames] = useState<Game[]>([])
@@ -57,7 +57,7 @@ function LeaderboardSection() {
       {loading ? (
         <p className="text-center">Loading...</p>
       ) : (
-        <table className="mx-auto max-w-2xl w-full border-collapse table-fixed">
+        <table className="mx-auto max-w-2xl w-full border-collapse table-fixed outline- outline-white">
           <thead>
             <tr className="border-b border-gray-300">
               <th className="py-2 px-4 text-left w-16">#</th>
