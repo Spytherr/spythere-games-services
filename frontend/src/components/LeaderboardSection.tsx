@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import type { Game, LeaderboardEntry } from '../types'
 import { fetchGames, fetchTopScores } from '../api/client'
+import { getPlatformImage } from '../Descriptions'
 
 function LeaderboardSection() {
   const [games, setGames] = useState<Game[]>([])
@@ -42,11 +43,10 @@ function LeaderboardSection() {
           <button
             key={game.Id}
             onClick={() => setSelectedGame(game.Key)}
-            className={`px-4 py-2 outline-3 transition ${
-              selectedGame === game.Key
-                ? 'bg-purple-600 text-white'
-                : 'bg-gray-200 hover:bg-gray-300'
-            }`}
+            className={`px-4 py-2 outline-3 transition ${selectedGame === game.Key
+              ? 'bg-blue-500 text-white'
+              : 'bg-gray-200 hover:bg-gray-300'
+              }`}
           >
             {game.Name}
           </button>
@@ -57,22 +57,29 @@ function LeaderboardSection() {
       {loading ? (
         <p className="text-center">Loading...</p>
       ) : (
-        <table className="mx-auto max-w-2xl w-full border-collapse">
+        <table className="mx-auto max-w-2xl w-full border-collapse table-fixed">
           <thead>
             <tr className="border-b border-gray-300">
-              <th className="py-2 px-4 text-left">#</th>
+              <th className="py-2 px-4 text-left w-16">#</th>
               <th className="py-2 px-4 text-left">Player</th>
-              <th className="py-2 px-4 text-right">Score</th>
-              <th className="py-2 px-4 text-left">Platform</th>
+              <th className="py-2 px-4 text-right w-32">Score</th>
+              <th className="py-2 px-4 text-center w-24">Platform</th>
             </tr>
           </thead>
           <tbody>
             {scores.map((entry) => (
               <tr key={entry.Rank} className="border-b border-gray-100">
-                <td className="py-2 px-4">{entry.Rank}</td>
-                <td className="py-2 px-4">{entry.DisplayName}</td>
+                <td className="py-2 px-4 text-left">{entry.Rank}</td>
+                <td className="py-2 px-4 text-left">{entry.DisplayName}</td>
                 <td className="py-2 px-4 text-right">{entry.ScoreValue}</td>
-                <td className="py-2 px-4">{entry.Platform}</td>
+                <td className="py-2 px-4 text-center">
+                  <img
+                    src={getPlatformImage(entry.Platform)}
+                    alt={entry.Platform}
+                    className="w-8 h-8 inline-block"
+                    style={{ imageRendering: 'pixelated' }}
+                  />
+                </td>
               </tr>
             ))}
           </tbody>
