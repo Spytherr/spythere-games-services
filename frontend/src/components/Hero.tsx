@@ -13,18 +13,18 @@ function Hero() {
       <img
         src="/logo.png"
         alt="Spythere Games"
-        className={`w-80 h-50 mb-1 transition-all duration-700 ${
+        className={`logo w-80 h-50 mb-1 transition-all duration-700 ${
           visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
         }`}
       />
       {/* <h1 className="text-5xl font-bold mb-4">Spythere Games</h1> */}
-      <p
-        className={`text-5xl text-gray-300 mb-8 py-7 transition-all duration-700 delay-200 ${
+      {/* <p
+        className={`text-5xl text-[var(--text)] mb-8 py-7 transition-all duration-700 delay-200 ${
           visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
         }`}
       >
         Independent game developer
-      </p>
+      </p> */}
       <div
         className={`flex gap-4 transition-all duration-700 delay-400 ${
           visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
@@ -33,14 +33,14 @@ function Hero() {
         <a
           href="https://youtube.com/@yourchannel"
           target="_blank"
-          className="px-6 py-3 bg-red-600 text-white outline-3 hover:bg-red-700 transition"
+          className="px-6 py-3 bg-red-600 text-white pixel-outline shadow-md hover:bg-red-700 hover:-translate-y-1 hover:shadow-lg transition-all"
         >
           YouTube
         </a>
         <a
           href="https://github.com/yourusername"
           target="_blank"
-          className="px-6 py-3 bg-gray-800 text-white outline-3 hover:bg-gray-900 transition"
+          className="px-6 py-3 bg-gray-800 text-white pixel-outline shadow-md hover:bg-gray-900 hover:-translate-y-1 hover:shadow-lg transition-all"
         >
           GitHub
         </a>

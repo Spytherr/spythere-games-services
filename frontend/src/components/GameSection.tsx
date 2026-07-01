@@ -5,14 +5,11 @@ import { getGameDescription } from '../gameData'
 import { useInView } from '../hooks/useInView'
 
 function GamesSection() {
-  // useState — jak pole w klasie C#, przechowuje stan komponentu
   const [games, setGames] = useState<Game[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const { ref, inView } = useInView<HTMLElement>()
 
-  // useEffect — wykonuje się po wyrenderowaniu komponentu
-  // [] na końcu = uruchom TYLKO RAZ przy pierwszym renderze
   useEffect(() => {
     fetchGames()
       .then((data) => setGames(data))
@@ -31,28 +28,28 @@ function GamesSection() {
         {games.map((game) => (
           <div
             key={game.Id}
-            className={`flex  gap-6 border-4 border-gray-200 p-6 hover:shadow-lg transition-all duration-500 ${
+            className={`flex flex-col md:flex-row gap-6 pixel-outline p-6 bg-[var(--bg)]/80 backdrop-blur-sm hover:shadow-lg transition-all duration-500 ${
               inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
             }`}
           >
-            <div className="flex-1 text-left">
+            <div className="flex-1 min-w-0 text-left">
               <div className="flex items-center gap-3 mb-8">
                 <img
                   src={`/${game.Key}/icon.png`}
                   alt={game.Name}
-                  className="w-16 h-16 object-cover outline-3 outline-white"
+                  className="w-16 h-16 object-cover pixel-outline"
                 />
                 <h3 className="text-5xl ">{game.Name}</h3>
               </div>
               <p
-                className={`text-gray-300 w-full mb-4 transition-all duration-500 delay-150 ${
+                className={`text-[var(--text)] w-full mb-4 transition-all duration-500 delay-150 ${
                   inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
                 }`}
               >
                 {getGameDescription(game.Key)}
               </p>
               <div
-                className={`transition-all duration-500 delay-300 ${
+                className={`flex flex-wrap gap-4 mt-4 transition-all duration-500 delay-300 ${
                   inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
                 }`}
               >
@@ -60,16 +57,24 @@ function GamesSection() {
                   href="https://play.google.com/store"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-block px-6 py-3 mt-4 bg-green-500 text-white outline-3 hover:bg-green-600 transition-colors"
+                  className="inline-block px-6 py-3 bg-green-500 text-white pixel-outline shadow-md hover:bg-green-600 hover:-translate-y-1 hover:shadow-lg transition-all"
                 >
                   Google Play Store
+                </a>
+                <a
+                  href="https://youtube.com/@yourchannel"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block px-6 py-3 bg-red-600 text-white pixel-outline shadow-md hover:bg-red-700 hover:-translate-y-1 hover:shadow-lg transition-all"
+                >
+                  Youtube
                 </a>
               </div>
             </div>
             <img
               src={`/${game.Key}/screenshot.png`}
               alt={game.Name}
-              className="w-40 h-84 object-cover outline-3 outline-white"
+              className="w-full md:w-40 h-48 md:h-84 object-cover pixel-outline shrink-0 mx-auto md:mx-0"
             />
           </div>
         ))}

@@ -11,14 +11,12 @@ function LeaderboardSection() {
   const [loading, setLoading] = useState(false)
   const { ref, inView } = useInView<HTMLElement>()
 
-  // 1) Załaduj listę gier raz przy starcie
   useEffect(() => {
     fetchGames()
       .then(setGames)
       .catch(console.error)
   }, [])
 
-  // 2) Załaduj scores gdy zmieni się wybrana gra
   useEffect(() => {
     if (!selectedGame) return
     setLoading(true)
@@ -28,7 +26,6 @@ function LeaderboardSection() {
       .finally(() => setLoading(false))
   }, [selectedGame])
 
-  // 3) Auto-wybierz pierwszą grę gdy lista się załaduje
   useEffect(() => {
     if (games.length > 0 && !selectedGame) {
       setSelectedGame(games[0].Key)
@@ -39,7 +36,7 @@ function LeaderboardSection() {
     <section ref={ref} className={`py-16 px-4 transition-all duration-500 ${
       inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
     }`}>
-      <h2 className="text-3xl font-bold text-center mb-8">Leaderboards</h2>
+      <h2 className="text-6xl text-center mb-8">Leaderboards</h2>
 
       {/* Tabs do wyboru gry */}
       <div className="flex justify-center gap-2 mb-8 flex-wrap">
@@ -47,7 +44,7 @@ function LeaderboardSection() {
           <button
             key={game.Id}
             onClick={() => setSelectedGame(game.Key)}
-            className={`px-4 py-2 outline-3 transition ${selectedGame === game.Key
+            className={`px-4 py-2 pixel-outline transition ${selectedGame === game.Key
               ? 'bg-blue-500 text-white'
               : 'bg-gray-200 hover:bg-gray-300'
               }`}
@@ -61,7 +58,7 @@ function LeaderboardSection() {
       {loading ? (
         <p className="text-center">Loading...</p>
       ) : (
-        <table className="mx-auto max-w-2xl w-full border-collapse table-fixed outline- outline-white">
+        <table className="mx-auto max-w-2xl w-full border-collapse table-fixed pixel-outline bg-[var(--bg)]/80 backdrop-blur-sm">
           <thead>
             <tr className="border-b border-gray-300">
               <th className="py-2 px-4 text-left w-16">#</th>

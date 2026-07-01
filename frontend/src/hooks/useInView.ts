@@ -15,7 +15,7 @@ export function useInView<T extends HTMLElement>() {
           observer.unobserve(entry.target)
         }
       },
-      { threshold: 0.25 }
+      { threshold: 0.35 }
     )
  
     observer.observe(element)
