@@ -19,7 +19,6 @@ builder.Services.AddCors(options =>
             "http://localhost:3000",    
             "http://localhost:5173",
             "https://spythere-games.vercel.app"
-            
         )
         .AllowAnyHeader()
         .AllowAnyMethod();
