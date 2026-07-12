@@ -6,6 +6,11 @@ public class ApiKeyMiddleware(RequestDelegate next, IConfiguration configuration
 
     public async Task InvokeAsync(HttpContext context)
     {
+        if (HttpMethods.IsOptions(context.Request.Method))
+        {
+            await next(context);
+            return;
+        }
         // Skip GET and HEAD requests (public for website)
         if (context.Request.Method == "GET" || context.Request.Method == "HEAD")
         {

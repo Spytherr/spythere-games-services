@@ -5,14 +5,12 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddOpenApi();
 builder.Services.AddHttpClient();
 
-// JSON: PascalCase — Unity's JsonUtility wymaga dokładnego dopasowania nazw pól.
-// Bez tego API zwraca camelCase (rank, displayName...) a Unity oczekuje PascalCase (Rank, DisplayName...).
+
 builder.Services.ConfigureHttpJsonOptions(options =>
 {
-    options.SerializerOptions.PropertyNamingPolicy = null; // null = PascalCase (domyślny C#)
+    options.SerializerOptions.PropertyNamingPolicy = null; 
 });
 
-// CORS — wymagane dla React SPA (portfolio) na innej domenie
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
@@ -20,7 +18,7 @@ builder.Services.AddCors(options =>
         policy.WithOrigins(
             "http://localhost:3000",    
             "http://localhost:5173",
-            "https://spythere-games.vercel.app/"     
+            "https://spythere-games.vercel.app"
             
         )
         .AllowAnyHeader()
@@ -42,9 +40,8 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-app.UseMiddleware<GlobalExceptionMiddleware>();
-app.UseHttpsRedirection();
 app.UseCors("AllowFrontend");
+app.UseMiddleware<GlobalExceptionMiddleware>();
 app.UseMiddleware<ApiKeyMiddleware>();
 
 app.MapScoresEndpoints();
