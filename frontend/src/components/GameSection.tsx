@@ -53,22 +53,16 @@ function GamesSection() {
                   inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
                 }`}
               >
-                <a
-                  href="https://play.google.com/store"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-block px-6 py-3 bg-green-500 text-white pixel-outline shadow-md hover:bg-green-600 hover:-translate-y-1 hover:shadow-lg transition-all"
+                <span
+                  className="inline-block px-6 py-3 bg-green-500 text-white pixel-outline shadow-md opacity-40 cursor-not-allowed select-none"
                 >
                   Google Play Store
-                </a>
-                <a
-                  href="https://youtube.com/@yourchannel"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-block px-6 py-3 bg-red-600 text-white pixel-outline shadow-md hover:bg-red-700 hover:-translate-y-1 hover:shadow-lg transition-all"
+                </span>
+                <span
+                  className="inline-block px-6 py-3 bg-red-600 text-white pixel-outline shadow-md opacity-40 cursor-not-allowed select-none"
                 >
                   Youtube
-                </a>
+                </span>
               </div>
             </div>
             <img

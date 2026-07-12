@@ -18,10 +18,10 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowFrontend", policy =>
     {
         policy.WithOrigins(
-            "http://localhost:3000",    // React dev (CRA)
-            "http://localhost:5173"     // React dev (Vite)
-            // Dodaj tu produkcyjny URL gdy zdeployujesz React, np.:
-            // "https://spyther.dev"
+            "http://localhost:3000",    
+            "http://localhost:5173",
+            "https://spythere-games.vercel.app/"     
+            
         )
         .AllowAnyHeader()
         .AllowAnyMethod();
