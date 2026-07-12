@@ -3,6 +3,7 @@ import Hero from './components/Hero'
 import GamesSection from './components/GameSection'
 import LeaderboardSection from './components/LeaderboardSection'
 import PixelBackground from './components/PixelBackground'
+import Footer from './components/Footer'
 
 function App() {
   useEffect(() => {
@@ -25,6 +26,7 @@ function App() {
         <Hero />
         <GamesSection />
         <LeaderboardSection />
+        <Footer />
       </div>
     </div>
   )
