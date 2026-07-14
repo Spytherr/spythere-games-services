@@ -8,7 +8,7 @@ function Footer() {
       inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
     }`}>
       <p className="text-2xl text-[var(--text)] mb-2">
-        Interested in becoming a tester?
+        Contact:
       </p>
       <a
         href="mailto:spytherr@gmail.com"
@@ -16,6 +16,9 @@ function Footer() {
       >
         spytherr@gmail.com
       </a>
+      <p className="text-sm text-[var(--text)] opacity-50 mt-8">
+        © {new Date().getFullYear()} Spythere Games. All rights reserved.
+      </p>
     </footer>
   )
 }
