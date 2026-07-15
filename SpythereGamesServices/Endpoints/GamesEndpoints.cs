@@ -6,7 +6,6 @@ public static class GamesEndpoints
 {
     public static void MapGamesEndpoints(this WebApplication app)
     {
-        // GET /api/games — lista wszystkich gier (publiczny, dla strony portfolio)
         app.MapGet("/api/games", async (SpythereGamesServicesContext context, CancellationToken ct) =>
         {
             var games = await context.Games
@@ -18,7 +17,6 @@ public static class GamesEndpoints
         })
         .WithName("GetAllGames");
 
-        // GET /api/games/{gameKey} — szczegóły jednej gry (publiczny)
         app.MapGet("/api/games/{gameKey}", async (string gameKey, SpythereGamesServicesContext context, CancellationToken ct) =>
         {
             var game = await context.Games.AsNoTracking().FirstOrDefaultAsync(g => g.Key == gameKey, ct);

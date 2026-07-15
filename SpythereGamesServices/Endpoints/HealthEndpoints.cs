@@ -10,7 +10,6 @@ public static class HealthEndpoints
         {
             try
             {
-                // To keep Supabase instance awake, execute a lightweight query.
                 await context.Database.ExecuteSqlRawAsync("SELECT 1", ct);
                 return Results.Ok(new { Status = "Healthy" });
             }

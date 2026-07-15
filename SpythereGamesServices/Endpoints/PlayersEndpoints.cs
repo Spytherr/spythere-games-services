@@ -6,7 +6,6 @@ public static class PlayersEndpoints
 {
     public static void MapPlayersEndpoints(this WebApplication app)
     {
-        // GET /api/players/{id} — publiczny (dla strony portfolio)
         app.MapGet("/api/players/{id}", async (int id, IPlayerService playerService, CancellationToken ct) =>
         {
             var player = await playerService.GetPlayerAsync(id, ct);
@@ -16,10 +15,8 @@ public static class PlayersEndpoints
         })
         .WithName("GetPlayer");
 
-        // POST /api/players — rejestracja (wymaga API Key + Google Auth)
         app.MapPost("/api/players", async (RegisterPlayerRequest request, IPlayerService playerService, IGoogleAuthService googleAuth, CancellationToken ct) =>
         {
-            // Weryfikuj tożsamość przez Google
             var playerInfo = await googleAuth.VerifyAuthCodeAsync(request.AuthCode, ct);
             if (playerInfo is null)
                 return Results.Unauthorized();
@@ -42,10 +39,8 @@ public static class PlayersEndpoints
         })
         .WithName("RegisterPlayer");
 
-        // DELETE /api/players/me — usunięcie danych gracza (RODO)
         app.MapDelete("/api/players/me", async ([FromBody] DeletePlayerRequest request, IPlayerService playerService, IGoogleAuthService googleAuth, CancellationToken ct) =>
         {
-            // Weryfikuj tożsamość — tylko gracz może usunąć SWOJE dane
             var playerInfo = await googleAuth.VerifyAuthCodeAsync(request.AuthCode, ct);
             if (playerInfo is null)
                 return Results.Unauthorized();
