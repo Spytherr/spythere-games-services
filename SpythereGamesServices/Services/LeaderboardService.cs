@@ -6,15 +6,13 @@ public class LeaderboardService(SpythereGamesServicesContext context) : ILeaderb
 {
     public async Task<List<LeaderboardEntryResponse>?> GetTopScoresAsync(string gameKey, int count = 10)
     {
-        var game = await context.Games.FirstOrDefaultAsync(g => g.Key == gameKey);
+        var game = await context.Games.AsNoTracking().FirstOrDefaultAsync(g => g.Key == gameKey);
         if (game is null) return null;
 
-        // Ponieważ każdy gracz ma max 1 wynik per gra (upsert w SubmitScore),
-        // wystarczy proste zapytanie z Join — bez GroupBy.
-        var topScores = await context.Scores
+        var topScores = await context.Scores.AsNoTracking()
             .Where(s => s.GameId == game.Id)
             .Join(
-                context.Players,
+                context.Players.AsNoTracking(),
                 score => score.PlayerId,
                 player => player.Id,
                 (score, player) => new { score, player }
@@ -29,7 +27,6 @@ public class LeaderboardService(SpythereGamesServicesContext context) : ILeaderb
             })
             .ToListAsync();
 
-        // Rank obliczamy po stronie C# (po materializacji) — EF Core nie obsługuje indexu w Select
         var result = topScores.Select((entry, index) => new LeaderboardEntryResponse(
             index + 1,
             entry.DisplayName,
@@ -48,23 +45,19 @@ public class LeaderboardService(SpythereGamesServicesContext context) : ILeaderb
         var player = await context.Players.FirstOrDefaultAsync(p => p.ExternalId == externalId);
         if (player is null) return "Player not found. Register first.";
 
-        // Sprawdź czy gracz ma już wynik w tej grze
         var existingScore = await context.Scores
             .FirstOrDefaultAsync(s => s.PlayerId == player.Id && s.GameId == game.Id);
 
         if (existingScore is not null)
         {
-            // Aktualizuj tylko jeśli nowy wynik jest lepszy
             if (scoreValue > existingScore.Value)
             {
                 existingScore.Value = scoreValue;
                 existingScore.SubmittedAt = DateTime.UtcNow;
             }
-            // Jeśli gorszy lub równy — nic nie robimy (jak Google Play)
         }
         else
         {
-            // Pierwszy wynik tego gracza w tej grze
             var newScore = new Score
             {
                 PlayerId = player.Id,
@@ -82,18 +75,17 @@ public class LeaderboardService(SpythereGamesServicesContext context) : ILeaderb
 
     public async Task<LeaderboardEntryResponse?> GetPlayerBestScoreAsync(string gameKey, string externalId)
     {
-        var game = await context.Games.FirstOrDefaultAsync(g => g.Key == gameKey);
+        var game = await context.Games.AsNoTracking().FirstOrDefaultAsync(g => g.Key == gameKey);
         if (game is null) return null;
 
-        var player = await context.Players.FirstOrDefaultAsync(p => p.ExternalId == externalId);
+        var player = await context.Players.AsNoTracking().FirstOrDefaultAsync(p => p.ExternalId == externalId);
         if (player is null) return null;
 
-        var playerScore = await context.Scores
+        var playerScore = await context.Scores.AsNoTracking()
             .FirstOrDefaultAsync(s => s.GameId == game.Id && s.PlayerId == player.Id);
 
         if (playerScore is null) return null;
 
-        // Oblicz prawdziwy rank — ile graczy ma wyższy wynik + 1
         var rank = await context.Scores
             .CountAsync(s => s.GameId == game.Id && s.Value > playerScore.Value) + 1;
 

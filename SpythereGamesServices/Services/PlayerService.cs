@@ -6,12 +6,12 @@ public class PlayerService(SpythereGamesServicesContext context) : IPlayerServic
 {
     public async Task<Player?> GetPlayerAsync(int id)
     {
-        return await context.Players.FindAsync(id);
+        return await context.Players.AsNoTracking().FirstOrDefaultAsync(p => p.Id == id);
     }
 
     public async Task<Player?> GetPlayerByExternalIdAsync(string externalId)
     {
-        return await context.Players.FirstOrDefaultAsync(p => p.ExternalId == externalId);
+        return await context.Players.AsNoTracking().FirstOrDefaultAsync(p => p.ExternalId == externalId);
     }
 
     public async Task<Player> RegisterPlayerAsync(string externalId, string displayName, string platform)
@@ -33,15 +33,10 @@ public class PlayerService(SpythereGamesServicesContext context) : IPlayerServic
 
     public async Task<bool> DeletePlayerAsync(int id)
     {
-        var player = await context.Players
-            .Include(p => p.Scores)
-            .FirstOrDefaultAsync(p => p.Id == id);
+        var rowsDeleted = await context.Players
+            .Where(p => p.Id == id)
+            .ExecuteDeleteAsync();
 
-        if (player is null)
-            return false;
-
-        context.Players.Remove(player);
-        await context.SaveChangesAsync();
-        return true;
+        return rowsDeleted > 0;
     }
 }
