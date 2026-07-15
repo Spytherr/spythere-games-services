@@ -4,9 +4,9 @@ namespace SpythereGamesServices;
 
 public class LeaderboardService(SpythereGamesServicesContext context) : ILeaderboardService
 {
-    public async Task<List<LeaderboardEntryResponse>?> GetTopScoresAsync(string gameKey, int count = 10)
+    public async Task<List<LeaderboardEntryResponse>?> GetTopScoresAsync(string gameKey, int count = 10, CancellationToken ct = default)
     {
-        var game = await context.Games.AsNoTracking().FirstOrDefaultAsync(g => g.Key == gameKey);
+        var game = await context.Games.AsNoTracking().FirstOrDefaultAsync(g => g.Key == gameKey, ct);
         if (game is null) return null;
 
         var topScores = await context.Scores.AsNoTracking()
@@ -25,7 +25,7 @@ public class LeaderboardService(SpythereGamesServicesContext context) : ILeaderb
                 x.score.Value,
                 x.player.Platform
             })
-            .ToListAsync();
+            .ToListAsync(ct);
 
         var result = topScores.Select((entry, index) => new LeaderboardEntryResponse(
             index + 1,
@@ -37,16 +37,16 @@ public class LeaderboardService(SpythereGamesServicesContext context) : ILeaderb
         return result;
     }
 
-    public async Task<string?> SubmitScoreAsync(string gameKey, string externalId, long scoreValue)
+    public async Task<string?> SubmitScoreAsync(string gameKey, string externalId, long scoreValue, CancellationToken ct = default)
     {
-        var game = await context.Games.FirstOrDefaultAsync(g => g.Key == gameKey);
+        var game = await context.Games.FirstOrDefaultAsync(g => g.Key == gameKey, ct);
         if (game is null) return "Game not found";
 
-        var player = await context.Players.FirstOrDefaultAsync(p => p.ExternalId == externalId);
+        var player = await context.Players.FirstOrDefaultAsync(p => p.ExternalId == externalId, ct);
         if (player is null) return "Player not found. Register first.";
 
         var existingScore = await context.Scores
-            .FirstOrDefaultAsync(s => s.PlayerId == player.Id && s.GameId == game.Id);
+            .FirstOrDefaultAsync(s => s.PlayerId == player.Id && s.GameId == game.Id, ct);
 
         if (existingScore is not null)
         {
@@ -69,25 +69,25 @@ public class LeaderboardService(SpythereGamesServicesContext context) : ILeaderb
             context.Scores.Add(newScore);
         }
 
-        await context.SaveChangesAsync();
+        await context.SaveChangesAsync(ct);
         return null;
     }
 
-    public async Task<LeaderboardEntryResponse?> GetPlayerBestScoreAsync(string gameKey, string externalId)
+    public async Task<LeaderboardEntryResponse?> GetPlayerBestScoreAsync(string gameKey, string externalId, CancellationToken ct = default)
     {
-        var game = await context.Games.AsNoTracking().FirstOrDefaultAsync(g => g.Key == gameKey);
+        var game = await context.Games.AsNoTracking().FirstOrDefaultAsync(g => g.Key == gameKey, ct);
         if (game is null) return null;
 
-        var player = await context.Players.AsNoTracking().FirstOrDefaultAsync(p => p.ExternalId == externalId);
+        var player = await context.Players.AsNoTracking().FirstOrDefaultAsync(p => p.ExternalId == externalId, ct);
         if (player is null) return null;
 
         var playerScore = await context.Scores.AsNoTracking()
-            .FirstOrDefaultAsync(s => s.GameId == game.Id && s.PlayerId == player.Id);
+            .FirstOrDefaultAsync(s => s.GameId == game.Id && s.PlayerId == player.Id, ct);
 
         if (playerScore is null) return null;
 
         var rank = await context.Scores
-            .CountAsync(s => s.GameId == game.Id && s.Value > playerScore.Value) + 1;
+            .CountAsync(s => s.GameId == game.Id && s.Value > playerScore.Value, ct) + 1;
 
         return new LeaderboardEntryResponse(rank, player.DisplayName, playerScore.Value, player.Platform);
     }

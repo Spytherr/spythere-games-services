@@ -7,9 +7,9 @@ public static class PlayersEndpoints
     public static void MapPlayersEndpoints(this WebApplication app)
     {
         // GET /api/players/{id} — publiczny (dla strony portfolio)
-        app.MapGet("/api/players/{id}", async (int id, IPlayerService playerService) =>
+        app.MapGet("/api/players/{id}", async (int id, IPlayerService playerService, CancellationToken ct) =>
         {
-            var player = await playerService.GetPlayerAsync(id);
+            var player = await playerService.GetPlayerAsync(id, ct);
             if (player is null) return Results.NotFound();
             
             return Results.Ok(new { player.Id, player.DisplayName, player.Platform });
@@ -17,14 +17,14 @@ public static class PlayersEndpoints
         .WithName("GetPlayer");
 
         // POST /api/players — rejestracja (wymaga API Key + Google Auth)
-        app.MapPost("/api/players", async (RegisterPlayerRequest request, IPlayerService playerService, IGoogleAuthService googleAuth) =>
+        app.MapPost("/api/players", async (RegisterPlayerRequest request, IPlayerService playerService, IGoogleAuthService googleAuth, CancellationToken ct) =>
         {
             // Weryfikuj tożsamość przez Google
-            var playerInfo = await googleAuth.VerifyAuthCodeAsync(request.AuthCode);
+            var playerInfo = await googleAuth.VerifyAuthCodeAsync(request.AuthCode, ct);
             if (playerInfo is null)
                 return Results.Unauthorized();
 
-            var existingPlayer = await playerService.GetPlayerByExternalIdAsync(playerInfo.ExternalId);
+            var existingPlayer = await playerService.GetPlayerByExternalIdAsync(playerInfo.ExternalId, ct);
 
             if (existingPlayer is not null)
             {
@@ -34,7 +34,8 @@ public static class PlayersEndpoints
             var newPlayer = await playerService.RegisterPlayerAsync(
                 playerInfo.ExternalId, 
                 playerInfo.DisplayName, 
-                request.Platform
+                request.Platform,
+                ct
             );
 
             return Results.Created($"/api/players/{newPlayer.Id}", new { Message = "Player registered successfully", PlayerId = newPlayer.Id, newPlayer.ExternalId });
@@ -42,18 +43,18 @@ public static class PlayersEndpoints
         .WithName("RegisterPlayer");
 
         // DELETE /api/players/me — usunięcie danych gracza (RODO)
-        app.MapDelete("/api/players/me", async ([FromBody] DeletePlayerRequest request, IPlayerService playerService, IGoogleAuthService googleAuth) =>
+        app.MapDelete("/api/players/me", async ([FromBody] DeletePlayerRequest request, IPlayerService playerService, IGoogleAuthService googleAuth, CancellationToken ct) =>
         {
             // Weryfikuj tożsamość — tylko gracz może usunąć SWOJE dane
-            var playerInfo = await googleAuth.VerifyAuthCodeAsync(request.AuthCode);
+            var playerInfo = await googleAuth.VerifyAuthCodeAsync(request.AuthCode, ct);
             if (playerInfo is null)
                 return Results.Unauthorized();
 
-            var player = await playerService.GetPlayerByExternalIdAsync(playerInfo.ExternalId);
+            var player = await playerService.GetPlayerByExternalIdAsync(playerInfo.ExternalId, ct);
             if (player is null)
                 return Results.NotFound(new { Message = "Player not found" });
 
-            await playerService.DeletePlayerAsync(player.Id);
+            await playerService.DeletePlayerAsync(player.Id, ct);
 
             return Results.NoContent();
         })

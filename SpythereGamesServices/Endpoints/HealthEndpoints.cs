@@ -6,12 +6,12 @@ public static class HealthEndpoints
 {
     public static void MapHealthEndpoints(this WebApplication app)
     {
-        var handler = async (SpythereGamesServicesContext context, ILogger<SpythereGamesServicesContext> logger) =>
+        var handler = async (SpythereGamesServicesContext context, ILogger<SpythereGamesServicesContext> logger, CancellationToken ct) =>
         {
             try
             {
                 // To keep Supabase instance awake, execute a lightweight query.
-                await context.Database.ExecuteSqlRawAsync("SELECT 1");
+                await context.Database.ExecuteSqlRawAsync("SELECT 1", ct);
                 return Results.Ok(new { Status = "Healthy" });
             }
             catch (Exception ex)

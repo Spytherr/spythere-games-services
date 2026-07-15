@@ -5,7 +5,7 @@ namespace SpythereGamesServices;
 
 public class GoogleAuthService(IConfiguration configuration, IHttpClientFactory httpClientFactory, ILogger<GoogleAuthService> logger) : IGoogleAuthService
 {
-    public async Task<GooglePlayerInfo?> VerifyAuthCodeAsync(string authCode)
+    public async Task<GooglePlayerInfo?> VerifyAuthCodeAsync(string authCode, CancellationToken ct = default)
     {
         var clientId = configuration["GoogleAuth:ClientId"];
         var clientSecret = configuration["GoogleAuth:ClientSecret"];
@@ -26,15 +26,15 @@ public class GoogleAuthService(IConfiguration configuration, IHttpClientFactory 
             ["grant_type"] = "authorization_code"
         });
 
-        var response = await httpClient.PostAsync("https://oauth2.googleapis.com/token", tokenRequest);
+        var response = await httpClient.PostAsync("https://oauth2.googleapis.com/token", tokenRequest, ct);
         if (!response.IsSuccessStatusCode)
         {
-            var errBody = await response.Content.ReadAsStringAsync();
+            var errBody = await response.Content.ReadAsStringAsync(ct);
             logger.LogWarning("Google token exchange failed with status {StatusCode}. Body: {Body}", response.StatusCode, errBody);
             return null;
         }
 
-        var json = await response.Content.ReadFromJsonAsync<JsonElement>();
+        var json = await response.Content.ReadFromJsonAsync<JsonElement>(cancellationToken: ct);
 
         if (!json.TryGetProperty("access_token", out var accessTokenElement))
         {
@@ -54,15 +54,15 @@ public class GoogleAuthService(IConfiguration configuration, IHttpClientFactory 
             using var requestMessage = new HttpRequestMessage(HttpMethod.Get, "https://games.googleapis.com/games/v1/players/me");
             requestMessage.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 
-            var playerResponse = await httpClient.SendAsync(requestMessage);
+            var playerResponse = await httpClient.SendAsync(requestMessage, ct);
             if (!playerResponse.IsSuccessStatusCode)
             {
-                var errBody = await playerResponse.Content.ReadAsStringAsync();
+                var errBody = await playerResponse.Content.ReadAsStringAsync(ct);
                 logger.LogWarning("Failed to fetch player info from Play Games API. Status: {StatusCode}. Body: {Body}", playerResponse.StatusCode, errBody);
                 return null;
             }
 
-            var playerJson = await playerResponse.Content.ReadFromJsonAsync<JsonElement>();
+            var playerJson = await playerResponse.Content.ReadFromJsonAsync<JsonElement>(cancellationToken: ct);
             if (!playerJson.TryGetProperty("playerId", out var playerIdElement))
             {
                 logger.LogWarning("Play Games API response missing playerId");

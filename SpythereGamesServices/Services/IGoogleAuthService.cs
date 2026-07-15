@@ -2,5 +2,5 @@ namespace SpythereGamesServices;
 
 public interface IGoogleAuthService
 {
-    Task<GooglePlayerInfo?> VerifyAuthCodeAsync(string authCode);
+    Task<GooglePlayerInfo?> VerifyAuthCodeAsync(string authCode, CancellationToken ct = default);
 }

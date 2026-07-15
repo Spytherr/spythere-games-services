@@ -6,28 +6,31 @@ public static class ScoresEndpoints
 {
     public static void MapScoresEndpoints(this WebApplication app)
     {
-        // GET /api/games/{gameKey}/scores/top — publiczny (dla strony portfolio)
-        app.MapGet("/api/games/{gameKey}/scores/top", async (string gameKey, ILeaderboardService leaderboardService, int count = 10) =>
+        app.MapGet("/api/games/{gameKey}/scores/top", async (string gameKey, ILeaderboardService leaderboardService, CancellationToken ct, int count = 10) =>
         {
-            var topScores = await leaderboardService.GetTopScoresAsync(gameKey, count);
+            var topScores = await leaderboardService.GetTopScoresAsync(gameKey, count, ct);
             if (topScores is null) return Results.NotFound(new { Message = "Game not found" });
 
             return Results.Ok(topScores);
         })
         .WithName("GetTopScores");
 
-        // POST /api/games/{gameKey}/scores — wymaga API Key + Google Auth
-        app.MapPost("/api/games/{gameKey}/scores", async (string gameKey, SubmitScoreRequest request, ILeaderboardService leaderboardService, IGoogleAuthService googleAuth) =>
+        app.MapPost("/api/games/{gameKey}/scores", async (string gameKey, SubmitScoreRequest request, ILeaderboardService leaderboardService, IGoogleAuthService googleAuth, CancellationToken ct) =>
         {
-            // Weryfikuj tożsamość gracza
-            var playerInfo = await googleAuth.VerifyAuthCodeAsync(request.AuthCode);
+            if (request.ScoreValue < 0 || request.ScoreValue > 10_000_000)
+            {
+                return Results.BadRequest(new { Message = "Score value is out of allowed bounds" });
+            }
+
+            var playerInfo = await googleAuth.VerifyAuthCodeAsync(request.AuthCode, ct);
             if (playerInfo is null)
                 return Results.Unauthorized();
 
             var errorMessage = await leaderboardService.SubmitScoreAsync(
                 gameKey, 
-                playerInfo.ExternalId,  // ExternalId z weryfikacji Google, nie od klienta
-                request.ScoreValue
+                playerInfo.ExternalId,
+                request.ScoreValue,
+                ct
             );
 
             if (errorMessage is null)
@@ -41,10 +44,9 @@ public static class ScoresEndpoints
         })
         .WithName("SubmitScore");
 
-        // GET /api/games/{gameKey}/scores/player/{externalId} — publiczny
-        app.MapGet("/api/games/{gameKey}/scores/player/{externalId}", async (string gameKey, string externalId, ILeaderboardService leaderboardService) =>
+        app.MapGet("/api/games/{gameKey}/scores/player/{externalId}", async (string gameKey, string externalId, ILeaderboardService leaderboardService, CancellationToken ct) =>
         {
-            var bestScore = await leaderboardService.GetPlayerBestScoreAsync(gameKey, externalId);
+            var bestScore = await leaderboardService.GetPlayerBestScoreAsync(gameKey, externalId, ct);
             if (bestScore is null) return Results.NotFound(new { Message = "No scores found for this player or game" });
 
             return Results.Ok(bestScore);
