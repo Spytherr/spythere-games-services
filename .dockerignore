@@ -6,3 +6,5 @@
 **/.gitignore
 **/screenshots
 *.md
+SpythereGamesServices.Tests.Selenium/
+frontend/
