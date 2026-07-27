@@ -30,11 +30,13 @@ function Hero() {
           visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
         }`}
       >
-        <span
-          className="px-6 py-3 bg-red-600 text-white pixel-outline shadow-md opacity-40 cursor-not-allowed select-none"
+        <a
+          href="https://www.youtube.com/@Spyther-ob3yu"
+          target="_blank"
+          className="px-6 py-3 bg-red-600 text-white pixel-outline shadow-md hover:bg-red-700 hover:-translate-y-1 hover:shadow-lg transition-all"
         >
           YouTube
-        </span>
+        </a>
         <a
           href="https://github.com/Spytherr"
           target="_blank"

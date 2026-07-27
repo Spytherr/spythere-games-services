@@ -10,7 +10,7 @@ Spythere Games Services provides a backend API and interactive web frontend for 
 
 The project is split into two distinct applications:
 - **Backend Service (`SpythereGamesServices`)**: A stateless .NET 10 Web API utilizing Minimal APIs, Entity Framework Core 10 ORM connected to PostgreSQL, and dual-layer security middleware for write endpoints.
-- **Frontend Presentation Layer (`frontend`)**: A single-page application built with React 19, Vite 8, TypeScript 6, and Tailwind CSS v4. It showcases game leaderboards, retro/pixel-art UI components, and theme switching.
+- **Frontend Presentation Layer (`frontend`)**: A single-page application built with React 19, Vite 8, TypeScript 6, and Tailwind CSS v4.
 
 ---
 
