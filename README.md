@@ -4,16 +4,6 @@ A cross-platform game backend and developer website built with .NET 10 Minimal A
 
 ---
 
-## Architecture & System Overview
-
-Spythere Games Services provides a backend API and interactive web frontend for cross-platform game score aggregation, player identity verification, and leaderboard sorting.
-
-The project is split into two distinct applications:
-- **Backend Service (`SpythereGamesServices`)**: A stateless .NET 10 Web API utilizing Minimal APIs, Entity Framework Core 10 ORM connected to PostgreSQL, and dual-layer security middleware for write endpoints.
-- **Frontend Presentation Layer (`frontend`)**: A single-page application built with React 19, Vite 8, TypeScript 6, and Tailwind CSS v4.
-
----
-
 ## Technology Stack
 
 ### Backend (.NET 10)
@@ -60,23 +50,6 @@ To protect leaderboard integrity against unauthorized score manipulation and bot
 
 ---
 
-## Data Model & Query Optimization
-
-The relational database (`SpythereGamesServicesContext`) is structured for data consistency and fast leaderboard queries:
-
-- **`Player` Entity:**
-  - Stores unique external identifiers (`ExternalId`), `DisplayName`, and target `Platform` (PC, Web, Mobile).
-  - Supports GDPR compliance via a self-service account deletion endpoint (`DELETE /api/players/me`) that permanently removes the user and all associated records.
-- **`Game` Entity:**
-  - Holds configuration metadata (`Key`, `Name`, `Description`) for titles integrated with the platform.
-- **`Score` Entity & Conditional Upserts:**
-  - Links `PlayerId` and `GameId` with the numerical `Value` (`long`) and submission timestamp (`SubmittedAt`).
-  - **Upsert Strategy:** Instead of inserting every score attempt into an unbounded historical table, `LeaderboardService.SubmitScoreAsync` performs a conditional update. A new record is inserted if the player has no entry for the game; otherwise, the existing record is updated only if the new score (`scoreValue`) is higher than `existingScore.Value`.
-  - **Rank Computation:** Leaderboards are computed via relational `Join` queries across `Scores` and `Players` tables, returning deterministic relative ranks (`LeaderboardEntryResponse`).
-  - **Bulk Deletions & Read-Only Queries:** Read operations explicitly use `.AsNoTracking()` to avoid unnecessary change-tracking overhead, while account deletions utilize `.ExecuteDeleteAsync()` to purge player data directly in PostgreSQL without loading entity graphs into application memory.
-
----
-
 ## API Endpoints
 
 ### Leaderboard & Scores (`ScoresEndpoints`)
@@ -102,8 +75,16 @@ The relational database (`SpythereGamesServicesContext`) is structured for data 
 
 ---
 
-## Middleware & Resilience
+## Automated Testing
 
-- **`GlobalExceptionMiddleware`:** Catches unhandled runtime exceptions across the request lifecycle, logging diagnostic details while returning clean `500 Internal Server Error` JSON payloads without stack-trace leakage.
-- **Request Cancellation Awareness:** All Minimal API endpoints receive `CancellationToken` parameters and pass them through the service layer to Entity Framework Core and `HttpClient` calls. If a client drops the connection, database and external HTTP queries abort immediately.
-- **Automated Database Migrations:** On startup (`app.MigrateDatabase()`), the backend checks database connectivity and applies pending Entity Framework Core migrations to PostgreSQL before accepting requests.
+The project includes a **36-test** end-to-end suite built with **Selenium WebDriver 4.27** and **NUnit 4** targeting the live deployment at `spythere-games.vercel.app`. Tests run in headless Chrome and follow the **Page Object Model** pattern for maintainability.
+
+### Test Suites
+
+| Suite | Tests | What It Covers |
+| :--- | :---: | :--- |
+| `HealthApiTests` | 10 | Health endpoint status & JSON body, `HEAD` request support, games list schema validation (`Id`/`Key`/`Name`), invalid game key → 404, `POST` without `X-Api-Key` → 401 on scores & players, content-type header, top scores retrieval. |
+| `HeroPageTests` | 9 | Logo visibility (opacity animation), `alt` text & `src` attribute, GitHub/YouTube button presence & labels, GitHub link opens correct profile in new tab, hero section full-viewport height, both CTA buttons visible. |
+| `LeaderboardTests` | 9 | Section heading text, table column headers order (`#` / `Player` / `Score` / `Platform`), game tabs rendering & default active tab, tab switching updates scores, first row data non-empty, rank ascending order, platform icon `<img>` per row. |
+| `NavigationTests` | 8 | Page title non-empty, URL correctness, `<section>` presence, leaderboard heading visible after scroll, `<footer>` in DOM, GitHub link href & `target="_blank"`, mobile viewport (375×667) responsiveness. |
+
