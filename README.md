@@ -2,6 +2,14 @@
 
 A cross-platform game backend and developer website built with .NET 10 Minimal APIs, PostgreSQL (EF Core 10), Google OAuth 2.0 verification, and React 19 / TypeScript / Tailwind CSS v4.
 
+## What does it do?
+
+- **Leaderboards** — players compete for top scores across multiple game titles, with real-time rankings and personal best tracking
+- **Score submission** — game clients submit scores through a protected API; identity is verified server-side via Google OAuth
+- **Player profiles** — automatic registration through Google sign-in, with display names and platform info
+- **Account deletion** — players can permanently delete their profile and all associated scores (GDPR-friendly)
+- **Game registry** — a central catalog of all games active on the platform
+- **Developer website** — a React SPA
 ---
 
 ## Technology Stack
