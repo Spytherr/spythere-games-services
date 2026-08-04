@@ -37,13 +37,19 @@ public class LeaderboardService(SpythereGamesServicesContext context) : ILeaderb
         return result;
     }
 
-    public async Task<string?> SubmitScoreAsync(string gameKey, string externalId, long scoreValue, CancellationToken ct = default)
+    public async Task<string?> SubmitScoreAsync(string gameKey, string externalId, string displayName, long scoreValue, CancellationToken ct = default)
     {
         var game = await context.Games.FirstOrDefaultAsync(g => g.Key == gameKey, ct);
         if (game is null) return "Game not found";
 
         var player = await context.Players.FirstOrDefaultAsync(p => p.ExternalId == externalId, ct);
         if (player is null) return "Player not found. Register first.";
+
+        if (player.DisplayName != displayName)
+        {
+            player.DisplayName = displayName;
+            player.UpdatedAt = DateTime.UtcNow;
+        }
 
         var existingScore = await context.Scores
             .FirstOrDefaultAsync(s => s.PlayerId == player.Id && s.GameId == game.Id, ct);

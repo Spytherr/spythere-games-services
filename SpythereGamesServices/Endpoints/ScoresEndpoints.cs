@@ -29,6 +29,7 @@ public static class ScoresEndpoints
             var errorMessage = await leaderboardService.SubmitScoreAsync(
                 gameKey, 
                 playerInfo.ExternalId,
+                playerInfo.DisplayName,
                 request.ScoreValue,
                 ct
             );
