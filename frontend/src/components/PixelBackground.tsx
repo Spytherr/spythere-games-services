@@ -14,12 +14,15 @@ function PixelBackground() {
     const ringDistances = [6, 13, 24, 36, 50, 70]
     const splitIndexes = [6]
 
+    const frameDuration = 1000 / 60
+    const webVisibleFrames = 300
+    const webFadeSpeed = 0.01
+    const distantWebChance = 0.4
+    const minimumWebDistanceRatio = 0.35
+
     let cols: number, rows: number
-    let pixels: GridPixel[] = []
-    let frame = 0
-    let centerCol: number, centerRow: number
     let animationId: number
-    let regenerateTimer: ReturnType<typeof setTimeout> | null = null
+    let previousAnimationTimestamp: number | null = null
 
     class GridPixel {
       col: number
@@ -40,8 +43,8 @@ function PixelBackground() {
         this.delay = delay + Math.random() * 5
       }
 
-      update() {
-        if (this.state === 'waiting' && frame > this.delay) this.state = 'appearing'
+      update(webFrame: number) {
+        if (this.state === 'waiting' && webFrame > this.delay) this.state = 'appearing'
 
         if (this.state === 'appearing') {
           this.alpha += this.appearSpeed
@@ -51,13 +54,24 @@ function PixelBackground() {
         }
       }
 
-      draw(color: string) {
+      draw(color: string, webOpacity: number) {
         if (this.alpha > 0) {
-          ctx!.fillStyle = color.replace('ALPHA', String(this.alpha * 0.08))
+          ctx!.fillStyle = color.replace('ALPHA', String(this.alpha * webOpacity * 0.08))
           ctx!.fillRect(this.col * pixelSize, this.row * pixelSize, pixelSize, pixelSize)
         }
       }
     }
+
+    type Web = {
+      centerCol: number
+      centerRow: number
+      pixels: GridPixel[]
+      age: number
+      opacity: number
+      isFading: boolean
+    }
+
+    let activeWebs: Web[] = []
 
     function getBresenhamLine(c1: number, r1: number, c2: number, r2: number) {
       const points: { col: number; row: number }[] = []
@@ -79,17 +93,55 @@ function PixelBackground() {
       return points
     }
 
-    function generateNewWeb() {
-      pixels = []
-      frame = 0
-
+    function getWebCenter(previousWeb?: Web) {
       const maxRing = ringDistances[ringDistances.length - 1]
       const margin = Math.min(maxRing + 2, Math.floor(cols / 3), Math.floor(rows / 3))
       const safeCols = Math.max(cols - margin * 2, 1)
       const safeRows = Math.max(rows - margin * 2, 1)
-      centerCol = Math.floor(margin + Math.random() * safeCols)
-      centerRow = Math.floor(margin + Math.random() * safeRows)
+      const getCandidate = () => ({
+        col: Math.floor(margin + Math.random() * safeCols),
+        row: Math.floor(margin + Math.random() * safeRows),
+      })
 
+      if (!previousWeb) return getCandidate()
+
+      const maxDistance = Math.hypot(safeCols - 1, safeRows - 1)
+      const minimumDistance = Math.min(
+        Math.max(maxDistance * minimumWebDistanceRatio, 12),
+        maxDistance,
+      )
+      const candidates: Array<{ col: number; row: number; distance: number }> = []
+      let furthestCandidate = getCandidate()
+      let furthestDistance = 0
+
+      for (let attempt = 0; attempt < 24; attempt++) {
+        const candidate = getCandidate()
+        const distance = Math.hypot(
+          candidate.col - previousWeb.centerCol,
+          candidate.row - previousWeb.centerRow,
+        )
+        if (distance > furthestDistance) {
+          furthestCandidate = candidate
+          furthestDistance = distance
+        }
+        if (distance >= minimumDistance) candidates.push({ ...candidate, distance })
+      }
+
+      if (!candidates.length) return furthestCandidate
+
+      candidates.sort((a, b) => a.distance - b.distance)
+      if (Math.random() < distantWebChance) {
+        const candidate = candidates[candidates.length - 1]
+        return { col: candidate.col, row: candidate.row }
+      }
+
+      const nearbyCandidateCount = Math.max(1, Math.ceil(candidates.length / 3))
+      const candidate = candidates[Math.floor(Math.random() * nearbyCandidateCount)]
+      return { col: candidate.col, row: candidate.row }
+    }
+
+    function generateNewWeb(previousWeb?: Web): Web {
+      const { col: centerCol, row: centerRow } = getWebCenter(previousWeb)
       const pixelMap = new Map<string, GridPixel>()
 
       const addLine = (c1: number, r1: number, c2: number, r2: number) => {
@@ -145,7 +197,14 @@ function PixelBackground() {
         }
       }
 
-      pixels = Array.from(pixelMap.values())
+      return {
+        centerCol,
+        centerRow,
+        pixels: Array.from(pixelMap.values()),
+        age: 0,
+        opacity: 1,
+        isFading: false,
+      }
     }
 
     function getColor(): string {
@@ -156,17 +215,34 @@ function PixelBackground() {
       return 'rgba(0, 0, 0, ALPHA)'
     }
 
-    function animate() {
+    function animate(timestamp = performance.now()) {
+      const elapsedFrames = previousAnimationTimestamp === null
+        ? 1
+        : Math.min((timestamp - previousAnimationTimestamp) / frameDuration, 3)
+      previousAnimationTimestamp = timestamp
+
       ctx!.clearRect(0, 0, canvas!.width, canvas!.height)
-      frame++
 
       const color = getColor()
+      const fadedWebs: Web[] = []
 
-      pixels.forEach(p => {
-        p.update()
-        p.draw(color)
+      activeWebs.forEach((web) => {
+        web.age += elapsedFrames
+        if (!web.isFading && web.age >= webVisibleFrames) web.isFading = true
+        if (web.isFading) {
+          web.opacity = Math.max(0, web.opacity - webFadeSpeed * elapsedFrames)
+          if (web.opacity === 0) fadedWebs.push(web)
+        }
+
+        web.pixels.forEach((pixel) => {
+          pixel.update(web.age)
+          pixel.draw(color, web.opacity)
+        })
       })
 
+      activeWebs = activeWebs.filter(web => web.opacity > 0)
+      const previousWeb = fadedWebs[fadedWebs.length - 1]
+      if (activeWebs.length === 0 && previousWeb) activeWebs.push(generateNewWeb(previousWeb))
       animationId = requestAnimationFrame(animate)
     }
 
@@ -189,8 +265,8 @@ function PixelBackground() {
       cols = Math.floor(canvas!.width / pixelSize)
       rows = Math.floor(canvas!.height / pixelSize)
       if (regenerate) {
-        generateNewWeb()
-        if (regenerateTimer) clearTimeout(regenerateTimer)
+        activeWebs = [generateNewWeb()]
+        previousAnimationTimestamp = null
         cancelAnimationFrame(animationId)
         animate()
       }
@@ -224,7 +300,6 @@ function PixelBackground() {
     return () => {
       window.removeEventListener('resize', resizeHandler)
       cancelAnimationFrame(animationId)
-      if (regenerateTimer) clearTimeout(regenerateTimer)
       if (resizeTimer) clearTimeout(resizeTimer)
     }
   }, [])
