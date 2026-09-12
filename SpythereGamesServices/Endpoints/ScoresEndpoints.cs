@@ -15,20 +15,22 @@ public static class ScoresEndpoints
         })
         .WithName("GetTopScores");
 
-        app.MapPost("/api/games/{gameKey}/scores", async (string gameKey, SubmitScoreRequest request, ILeaderboardService leaderboardService, IGoogleAuthService googleAuth, CancellationToken ct) =>
+        app.MapPost("/api/games/{gameKey}/scores", async (string gameKey, SubmitScoreRequest request, ILeaderboardService leaderboardService, IPlayerAuthService playerAuth, CancellationToken ct) =>
         {
             if (request.ScoreValue < 0 || request.ScoreValue > 10_000_000)
             {
                 return Results.BadRequest(new { Message = "Score value is out of allowed bounds" });
             }
 
-            var playerInfo = await googleAuth.VerifyAuthCodeAsync(request.AuthCode, ct);
+            var playerInfo = await playerAuth.VerifyAsync(
+                new AuthCredentials(request.Platform, request.AuthCode, request.GameCenter), ct);
             if (playerInfo is null)
                 return Results.Unauthorized();
 
             var errorMessage = await leaderboardService.SubmitScoreAsync(
                 gameKey, 
                 playerInfo.ExternalId,
+                playerInfo.Platform,
                 playerInfo.DisplayName,
                 request.ScoreValue,
                 ct
@@ -45,9 +47,9 @@ public static class ScoresEndpoints
         })
         .WithName("SubmitScore");
 
-        app.MapGet("/api/games/{gameKey}/scores/player/{externalId}", async (string gameKey, string externalId, ILeaderboardService leaderboardService, CancellationToken ct) =>
+        app.MapGet("/api/games/{gameKey}/scores/player/{externalId}", async (string gameKey, string externalId, ILeaderboardService leaderboardService, CancellationToken ct, string? platform = null) =>
         {
-            var bestScore = await leaderboardService.GetPlayerBestScoreAsync(gameKey, externalId, ct);
+            var bestScore = await leaderboardService.GetPlayerBestScoreAsync(gameKey, externalId, PlatformNames.Normalize(platform), ct);
             if (bestScore is null) return Results.NotFound(new { Message = "No scores found for this player or game" });
 
             return Results.Ok(bestScore);

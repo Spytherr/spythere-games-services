@@ -58,7 +58,7 @@ function LeaderboardSection() {
       {loading ? (
         <p className="text-center">Loading...</p>
       ) : (
-        <table className="mx-auto max-w-2xl w-full border-collapse table-fixed pixel-outline bg-[var(--bg)]/80 backdrop-blur-sm">
+        <table className="mx-auto max-w-2xl w-full border-collapse table-fixed pixel-outline bg-(--bg)/80 backdrop-blur-sm">
           <thead>
             <tr className="border-b border-gray-300">
               <th className="py-2 px-4 text-left w-16">#</th>

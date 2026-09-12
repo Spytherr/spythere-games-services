@@ -1,7 +1,7 @@
 namespace SpythereGamesServices;
 
-public record DeletePlayerRequest(
-    string? AuthCode,
+public record AuthCredentials(
     string? Platform,
+    string? AuthCode,
     GameCenterAuthPayload? GameCenter
 );

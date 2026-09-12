@@ -4,6 +4,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi();
 builder.Services.AddHttpClient();
+builder.Services.AddMemoryCache();
 
 
 builder.Services.ConfigureHttpJsonOptions(options =>
@@ -31,6 +32,8 @@ builder.SpythereGamesServicesDataExtensions(connectionString);
 builder.Services.AddScoped<IPlayerService, PlayerService>();
 builder.Services.AddScoped<ILeaderboardService, LeaderboardService>();
 builder.Services.AddScoped<IGoogleAuthService, GoogleAuthService>();
+builder.Services.AddScoped<GameCenterAuthService>();
+builder.Services.AddScoped<IPlayerAuthService, PlayerAuthService>();
 
 var app = builder.Build();
 

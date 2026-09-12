@@ -20,7 +20,7 @@ public class SpythereGamesServicesContext(DbContextOptions<SpythereGamesServices
             .OnDelete(DeleteBehavior.Cascade);
         
         modelBuilder.Entity<Player>()
-            .HasIndex(p => p.ExternalId)
+            .HasIndex(p => new { p.Platform, p.ExternalId })
             .IsUnique();
 
         modelBuilder.Entity<Game>()
@@ -28,17 +28,14 @@ public class SpythereGamesServicesContext(DbContextOptions<SpythereGamesServices
             .WithOne()
             .HasForeignKey(s => s.GameId);
 
-        // Jeden wynik per gracz per gra (upsert w LeaderboardService)
         modelBuilder.Entity<Score>()
             .HasIndex(s => new { s.PlayerId, s.GameId })
             .IsUnique();
 
-        // Szybkie wyszukiwanie gry po kluczu
         modelBuilder.Entity<Game>()
             .HasIndex(g => g.Key)
             .IsUnique();
 
-        // Seedowanie gier
         modelBuilder.Entity<Game>().HasData(
             new Game
             {

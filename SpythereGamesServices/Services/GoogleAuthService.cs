@@ -4,7 +4,7 @@ namespace SpythereGamesServices;
 
 public class GoogleAuthService(IConfiguration configuration, IHttpClientFactory httpClientFactory, ILogger<GoogleAuthService> logger) : IGoogleAuthService
 {
-    public async Task<GooglePlayerInfo?> VerifyAuthCodeAsync(string authCode, CancellationToken ct = default)
+    public async Task<VerifiedPlayerInfo?> VerifyAuthCodeAsync(string authCode, CancellationToken ct = default)
     {
         var clientId = configuration["GoogleAuth:ClientId"];
         var clientSecret = configuration["GoogleAuth:ClientSecret"];
@@ -77,9 +77,10 @@ public class GoogleAuthService(IConfiguration configuration, IHttpClientFactory 
 
             logger.LogInformation("Successfully verified player {PlayerId} via Play Games API", playerId);
 
-            return new GooglePlayerInfo(
+            return new VerifiedPlayerInfo(
                 ExternalId: playerId,
-                DisplayName: displayName
+                DisplayName: displayName,
+                Platform: PlatformNames.Android
             );
         }
         catch (Exception ex)

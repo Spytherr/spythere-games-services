@@ -1,6 +1,7 @@
 namespace SpythereGamesServices;
 
 public record RegisterPlayerRequest(
-    string AuthCode,
-    string Platform
+    string? AuthCode,
+    string? Platform,
+    GameCenterAuthPayload? GameCenter
 );

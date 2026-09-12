@@ -15,13 +15,14 @@ public static class PlayersEndpoints
         })
         .WithName("GetPlayer");
 
-        app.MapPost("/api/players", async (RegisterPlayerRequest request, IPlayerService playerService, IGoogleAuthService googleAuth, CancellationToken ct) =>
+        app.MapPost("/api/players", async (RegisterPlayerRequest request, IPlayerService playerService, IPlayerAuthService playerAuth, CancellationToken ct) =>
         {
-            var playerInfo = await googleAuth.VerifyAuthCodeAsync(request.AuthCode, ct);
+            var playerInfo = await playerAuth.VerifyAsync(
+                new AuthCredentials(request.Platform, request.AuthCode, request.GameCenter), ct);
             if (playerInfo is null)
                 return Results.Unauthorized();
 
-            var existingPlayer = await playerService.GetPlayerByExternalIdAsync(playerInfo.ExternalId, ct);
+            var existingPlayer = await playerService.GetPlayerByExternalIdAsync(playerInfo.ExternalId, playerInfo.Platform, ct);
 
             if (existingPlayer is not null)
             {
@@ -31,7 +32,7 @@ public static class PlayersEndpoints
             var newPlayer = await playerService.RegisterPlayerAsync(
                 playerInfo.ExternalId, 
                 playerInfo.DisplayName, 
-                request.Platform,
+                playerInfo.Platform,
                 ct
             );
 
@@ -39,13 +40,14 @@ public static class PlayersEndpoints
         })
         .WithName("RegisterPlayer");
 
-        app.MapDelete("/api/players/me", async ([FromBody] DeletePlayerRequest request, IPlayerService playerService, IGoogleAuthService googleAuth, CancellationToken ct) =>
+        app.MapDelete("/api/players/me", async ([FromBody] DeletePlayerRequest request, IPlayerService playerService, IPlayerAuthService playerAuth, CancellationToken ct) =>
         {
-            var playerInfo = await googleAuth.VerifyAuthCodeAsync(request.AuthCode, ct);
+            var playerInfo = await playerAuth.VerifyAsync(
+                new AuthCredentials(request.Platform, request.AuthCode, request.GameCenter), ct);
             if (playerInfo is null)
                 return Results.Unauthorized();
 
-            var player = await playerService.GetPlayerByExternalIdAsync(playerInfo.ExternalId, ct);
+            var player = await playerService.GetPlayerByExternalIdAsync(playerInfo.ExternalId, playerInfo.Platform, ct);
             if (player is null)
                 return Results.NotFound(new { Message = "Player not found" });
 

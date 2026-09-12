@@ -9,9 +9,9 @@ public class PlayerService(SpythereGamesServicesContext context) : IPlayerServic
         return await context.Players.AsNoTracking().FirstOrDefaultAsync(p => p.Id == id, ct);
     }
 
-    public async Task<Player?> GetPlayerByExternalIdAsync(string externalId, CancellationToken ct = default)
+    public async Task<Player?> GetPlayerByExternalIdAsync(string externalId, string platform, CancellationToken ct = default)
     {
-        return await context.Players.AsNoTracking().FirstOrDefaultAsync(p => p.ExternalId == externalId, ct);
+        return await context.Players.AsNoTracking().FirstOrDefaultAsync(p => p.ExternalId == externalId && p.Platform == platform, ct);
     }
 
     public async Task<Player> RegisterPlayerAsync(string externalId, string displayName, string platform, CancellationToken ct = default)
