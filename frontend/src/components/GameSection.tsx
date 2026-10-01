@@ -29,12 +29,14 @@ function GamesSection() {
       {error && <p className="text-center py-12 text-red-500">{error}</p>}
       <h2 className="text-6xl text-center mb-8">Games</h2>
       <div className="grid grid-cols-1 md:grid-cols-1 gap-6 max-w-5xl mx-auto">
-        {allGames.map((game) => {
+        {allGames.map((game, index) => {
           const playUrl = getGamePlayUrl(game.Key)
+          const baseDelay = index * 200
 
           return (
             <div
               key={game.Id}
+              style={{ transitionDelay: `${baseDelay}ms` }}
               className={`flex flex-col md:flex-row gap-6 pixel-outline p-6 bg-[var(--bg)]/80 backdrop-blur-sm hover:shadow-lg transition-all duration-500 ${
                 inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
               }`}
@@ -49,14 +51,16 @@ function GamesSection() {
                   <h3 className="text-5xl ">{game.Name}</h3>
                 </div>
                 <p
-                  className={`text-[var(--text)] w-full mb-4 transition-all duration-500 delay-150 ${
+                  style={{ transitionDelay: `${baseDelay + 150}ms` }}
+                  className={`text-[var(--text)] w-full mb-4 transition-all duration-500 ${
                     inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
                   }`}
                 >
                   {getGameDescription(game.Key)}
                 </p>
                 <div
-                  className={`flex flex-wrap gap-4 mt-4 transition-all duration-500 delay-300 ${
+                  style={{ transitionDelay: `${baseDelay + 300}ms` }}
+                  className={`flex flex-wrap gap-4 mt-4 transition-all duration-500 ${
                     inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
                   }`}
                 >
