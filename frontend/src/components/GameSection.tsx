@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import type { Game } from '../types'
 import { fetchGames } from '../api/client'
-import { getGameDescription } from '../gameData'
+import { getGameDescription, getGamePlayUrl, STATIC_GAMES } from '../gameData'
 import { useInView } from '../hooks/useInView'
 
 function GamesSection() {
@@ -9,6 +9,10 @@ function GamesSection() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const { ref, inView } = useInView<HTMLElement>()
+  const allGames = [
+    ...games,
+    ...STATIC_GAMES.filter((staticGame) => !games.some((game) => game.Key === staticGame.Key)),
+  ]
 
   useEffect(() => {
     fetchGames()
@@ -25,53 +29,70 @@ function GamesSection() {
       {error && <p className="text-center py-12 text-red-500">{error}</p>}
       <h2 className="text-6xl text-center mb-8">Games</h2>
       <div className="grid grid-cols-1 md:grid-cols-1 gap-6 max-w-5xl mx-auto">
-        {games.map((game) => (
-          <div
-            key={game.Id}
-            className={`flex flex-col md:flex-row gap-6 pixel-outline p-6 bg-[var(--bg)]/80 backdrop-blur-sm hover:shadow-lg transition-all duration-500 ${
-              inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-            }`}
-          >
-            <div className="flex-1 min-w-0 text-left">
-              <div className="flex items-center gap-3 mb-8">
-                <img
-                  src={`/${game.Key}/icon.png`}
-                  alt={game.Name}
-                  className="w-16 h-16 object-cover pixel-outline"
-                />
-                <h3 className="text-5xl ">{game.Name}</h3>
-              </div>
-              <p
-                className={`text-[var(--text)] w-full mb-4 transition-all duration-500 delay-150 ${
-                  inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
-                }`}
-              >
-                {getGameDescription(game.Key)}
-              </p>
-              <div
-                className={`flex flex-wrap gap-4 mt-4 transition-all duration-500 delay-300 ${
-                  inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
-                }`}
-              >
-                <span
-                  className="inline-block px-6 py-3 bg-green-500 text-white pixel-outline shadow-md opacity-40 cursor-not-allowed select-none"
+        {allGames.map((game) => {
+          const playUrl = getGamePlayUrl(game.Key)
+
+          return (
+            <div
+              key={game.Id}
+              className={`flex flex-col md:flex-row gap-6 pixel-outline p-6 bg-[var(--bg)]/80 backdrop-blur-sm hover:shadow-lg transition-all duration-500 ${
+                inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+              }`}
+            >
+              <div className="flex-1 min-w-0 text-left">
+                <div className="flex items-center gap-3 mb-8">
+                  <img
+                    src={`/${game.Key}/icon.png`}
+                    alt={game.Name}
+                    className="w-16 h-16 object-cover pixel-outline"
+                  />
+                  <h3 className="text-5xl ">{game.Name}</h3>
+                </div>
+                <p
+                  className={`text-[var(--text)] w-full mb-4 transition-all duration-500 delay-150 ${
+                    inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+                  }`}
                 >
-                  Google Play Store
-                </span>
-                <span
-                  className="inline-block px-6 py-3 bg-red-600 text-white pixel-outline shadow-md opacity-40 cursor-not-allowed select-none"
+                  {getGameDescription(game.Key)}
+                </p>
+                <div
+                  className={`flex flex-wrap gap-4 mt-4 transition-all duration-500 delay-300 ${
+                    inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+                  }`}
                 >
-                  Youtube
-                </span>
+                  {playUrl ? (
+                    <a
+                      href={playUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-block px-6 py-3 bg-blue-600 text-white pixel-outline shadow-md hover:brightness-110"
+                    >
+                      Play
+                    </a>
+                  ) : (
+                    <>
+                      <span
+                        className="inline-block px-6 py-3 bg-green-500 text-white pixel-outline shadow-md opacity-40 cursor-not-allowed select-none"
+                      >
+                        Google Play Store
+                      </span>
+                      <span
+                        className="inline-block px-6 py-3 bg-red-600 text-white pixel-outline shadow-md opacity-40 cursor-not-allowed select-none"
+                      >
+                        Youtube
+                      </span>
+                    </>
+                  )}
+                </div>
               </div>
+              <img
+                src={`/${game.Key}/screenshot.png`}
+                alt={game.Name}
+                className="w-60 h-126 object-cover pixel-outline shrink-0 mx-auto md:mx-0"
+              />
             </div>
-            <img
-              src={`/${game.Key}/screenshot.png`}
-              alt={game.Name}
-              className="w-full md:w-40 h-48 md:h-84 object-cover pixel-outline shrink-0 mx-auto md:mx-0"
-            />
-          </div>
-        ))}
+          )
+        })}
       </div>
     </section>
   )
